@@ -3,9 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generador QR Ultra Personalizable</title>
+    <title>Generador QR Profesional</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
     <style>
+        :root {
+            --bg-color: #0f172a;
+            --surface: #1e293b;
+            --surface-hover: #334155;
+            --border: #334155;
+            --border-focus: #3b82f6;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --danger: #ef4444;
+            --success: #10b981;
+            --radius-md: 8px;
+            --radius-lg: 12px;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -13,674 +29,447 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
             min-height: 100vh;
-            padding: 20px;
+            padding: 2rem;
+            line-height: 1.5;
         }
 
         .container {
             max-width: 1400px;
             margin: 0 auto;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
-            overflow: hidden;
+            background-color: var(--bg-color);
         }
 
         .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 30px;
-            text-align: center;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 2rem;
         }
 
         .header h1 {
-            font-size: 2.5em;
-            margin-bottom: 10px;
-            font-weight: 300;
+            font-size: 2rem;
+            font-weight: 600;
+            letter-spacing: -0.025em;
+            color: var(--text-main);
+        }
+
+        .header p {
+            color: var(--text-muted);
+            margin-top: 0.5rem;
         }
 
         .main-content {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
-            padding: 30px;
+            grid-template-columns: 1fr 450px;
+            gap: 2rem;
         }
 
         .controls-panel {
-            background: #f8f9fa;
-            border-radius: 15px;
-            padding: 25px;
-            height: fit-content;
-            max-height: 90vh;
-            overflow-y: auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem;
+            align-content: start;
         }
 
         .qr-display {
-            text-align: center;
             position: sticky;
-            top: 20px;
+            top: 2rem;
+            background: var(--surface);
+            padding: 2rem;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: fit-content;
         }
 
         .section {
-            margin-bottom: 25px;
-            padding: 20px;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            background: var(--surface);
+            padding: 1.5rem;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
         }
 
         .section h3 {
-            color: #333;
-            margin-bottom: 15px;
-            font-size: 1.3em;
-            border-bottom: 2px solid #667eea;
-            padding-bottom: 8px;
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 1.5rem;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 1.25rem;
         }
 
         label {
             display: block;
-            margin-bottom: 5px;
-            font-weight: 600;
-            color: #555;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-muted);
         }
 
-        input, select, textarea {
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        input[type="password"],
+        select,
+        textarea {
             width: 100%;
-            padding: 12px;
-            border: 2px solid #e9ecef;
-            border-radius: 8px;
-            font-size: 14px;
-            transition: all 0.3s ease;
+            padding: 0.75rem 1rem;
+            background-color: var(--bg-color);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            color: var(--text-main);
+            font-size: 0.875rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
         }
 
         input:focus, select:focus, textarea:focus {
             outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            border-color: var(--border-focus);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
         }
 
         .color-matrix {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 15px;
-            margin: 15px 0;
+            gap: 1rem;
+            margin-bottom: 1rem;
         }
 
         .color-input-group {
             display: flex;
             flex-direction: column;
-            align-items: center;
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 12px;
-            border: 2px solid transparent;
-            transition: all 0.3s ease;
+            gap: 0.5rem;
         }
 
-        .color-input-group:hover {
-            border-color: #667eea;
-            background: #f0f5ff;
-        }
-
-        .color-input {
-            width: 50px;
-            height: 50px;
-            border: none;
-            border-radius: 50%;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            transition: transform 0.2s ease;
-        }
-
-        .color-input:hover {
-            transform: scale(1.1);
-        }
-
-        .color-label {
-            margin-top: 8px;
-            font-size: 12px;
-            font-weight: 600;
-            color: #666;
-        }
-
-        .gradient-preview {
+        input[type="color"] {
             width: 100%;
-            height: 60px;
-            border-radius: 12px;
-            margin: 15px 0;
-            border: 2px solid #e9ecef;
-            box-shadow: inset 0 2px 8px rgba(0,0,0,0.1);
+            height: 40px;
+            padding: 0;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            background: none;
         }
 
-        .blur-controls {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            margin: 20px 0;
+        input[type="color"]::-webkit-color-swatch-wrapper {
+            padding: 2px;
         }
 
-        .blur-control {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 10px;
-            border: 1px solid #e9ecef;
+        input[type="color"]::-webkit-color-swatch {
+            border-radius: 4px;
+            border: none;
         }
 
         .slider-group {
-            margin: 15px 0;
+            margin-bottom: 1.25rem;
         }
 
         .slider-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 8px;
+            margin-bottom: 0.5rem;
         }
 
         .slider-value {
-            background: #667eea;
-            color: white;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
+            font-size: 0.75rem;
             font-weight: 600;
+            color: var(--primary);
+            background: rgba(59, 130, 246, 0.1);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
         }
 
-        .slider {
+        input[type="range"] {
             width: 100%;
-            height: 8px;
-            border-radius: 5px;
-            background: #e9ecef;
+            height: 6px;
+            background: var(--bg-color);
+            border: 1px solid var(--border);
+            border-radius: 3px;
+            appearance: none;
             outline: none;
-            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
             appearance: none;
-        }
-
-        .slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 20px;
-            height: 20px;
+            width: 16px;
+            height: 16px;
             border-radius: 50%;
-            background: #667eea;
+            background: var(--primary);
             cursor: pointer;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-            border: none;
+            transition: transform 0.1s;
         }
 
-        .slider::-moz-range-thumb {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: #667eea;
-            cursor: pointer;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-            border: none;
-        }
-
-        .logo-upload {
-            border: 3px dashed #ccc;
-            padding: 30px;
-            text-align: center;
-            border-radius: 15px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            background: linear-gradient(45deg, #f8f9fa 25%, transparent 25%, transparent 75%, #f8f9fa 75%, #f8f9fa),
-                        linear-gradient(45deg, #f8f9fa 25%, transparent 25%, transparent 75%, #f8f9fa 75%, #f8f9fa);
-            background-size: 20px 20px;
-            background-position: 0 0, 10px 10px;
-        }
-
-        .logo-upload:hover {
-            border-color: #667eea;
-            background: #f0f5ff;
-        }
-
-        .logo-upload.has-image {
-            background: #e8f5e8;
-            border-color: #4caf50;
-        }
-
-        .logo-preview {
-            max-width: 120px;
-            max-height: 120px;
-            margin: 15px auto;
-            display: block;
-            border-radius: 12px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-        }
-
-        .integration-controls {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin: 20px 0;
-        }
-
-        .integration-option {
-            padding: 15px;
-            border: 2px solid #e9ecef;
-            border-radius: 10px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            background: white;
-        }
-
-        .integration-option:hover {
-            border-color: #667eea;
-            background: #f0f5ff;
-        }
-
-        .integration-option.active {
-            border-color: #667eea;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-
-        .blend-modes {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin: 15px 0;
-        }
-
-        .blend-mode {
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            text-align: center;
-            cursor: pointer;
-            font-size: 12px;
-            transition: all 0.2s ease;
-            background: white;
-        }
-
-        .blend-mode:hover {
-            border-color: #667eea;
-            background: #f0f5ff;
-        }
-
-        .blend-mode.active {
-            border-color: #667eea;
-            background: #667eea;
-            color: white;
-        }
-
-        .qr-canvas {
-            border: 1px solid #ddd;
-            border-radius: 20px;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.1);
-            margin: 20px 0;
-            background: #fff;
-        }
-
-        .download-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            padding: 18px 35px;
-            font-size: 16px;
-            font-weight: 600;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            width: 100%;
-            margin-top: 20px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .download-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
-        }
-
-        .effect-showcase {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            margin: 20px 0;
-        }
-
-        .effect-item {
-            padding: 15px;
-            border: 2px solid #e9ecef;
-            border-radius: 12px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            background: white;
-        }
-
-        .effect-item:hover {
-            border-color: #667eea;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
-        }
-
-        .effect-item.active {
-            border-color: #667eea;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-
-        .effect-preview {
-            width: 40px;
-            height: 40px;
-            margin: 0 auto 10px;
-            border-radius: 8px;
-            background: #667eea;
-        }
-
-        .effect-preview.shadow {
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.5);
-        }
-
-        .effect-preview.glow {
-            box-shadow: 0 0 20px rgba(102, 126, 234, 0.8);
-        }
-
-        .effect-preview.threed {
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            transform: perspective(100px) rotateX(10deg);
-        }
-
-        .advanced-colors {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin: 15px 0;
-        }
-
-        .color-preset {
-            height: 40px;
-            border-radius: 8px;
-            cursor: pointer;
-            border: 3px solid transparent;
-            transition: all 0.2s ease;
-        }
-
-        .color-preset:hover {
-            border-color: white;
-            transform: scale(1.05);
-        }
-
-        .color-preset.active {
-            border-color: #333;
+        input[type="range"]::-webkit-slider-thumb:hover {
             transform: scale(1.1);
         }
 
+        .toggle-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .toggle-btn {
+            padding: 0.5rem 1rem;
+            background: var(--bg-color);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .toggle-btn:hover {
+            background: var(--surface-hover);
+            color: var(--text-main);
+        }
+
+        .toggle-btn.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: #fff;
+        }
+
+        .logo-upload {
+            border: 1px dashed var(--border);
+            padding: 2rem;
+            text-align: center;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            background: var(--bg-color);
+            transition: all 0.2s;
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+
+        .logo-upload:hover {
+            border-color: var(--primary);
+            color: var(--text-main);
+        }
+
+        .logo-upload.has-image {
+            border-color: var(--success);
+            border-style: solid;
+        }
+
+        .qr-canvas {
+            border-radius: var(--radius-md);
+            background: #ffffff;
+            max-width: 100%;
+            height: auto;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        .download-btn {
+            width: 100%;
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background-color: var(--primary);
+            color: #ffffff;
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .download-btn:hover {
+            background-color: var(--primary-hover);
+        }
+
         .messages {
-            margin-top: 20px;
+            width: 100%;
+            margin-top: 1rem;
+            font-size: 0.875rem;
         }
 
         .message {
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 10px;
-            font-weight: 500;
+            padding: 0.75rem 1rem;
+            border-radius: var(--radius-md);
+            margin-bottom: 0.5rem;
         }
 
-        .message.success {
-            background: #e8f5e8;
-            color: #2e7d32;
-            border-left: 4px solid #4caf50;
-        }
+        .message.success { background: rgba(16, 185, 129, 0.1); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.2); }
+        .message.error { background: rgba(239, 68, 68, 0.1); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.2); }
 
-        .message.error {
-            background: #ffebee;
-            color: #c62828;
-            border-left: 4px solid #f44336;
-        }
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-color); }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
 
-        .message.info {
-            background: #e3f2fd;
-            color: #1565c0;
-            border-left: 4px solid #2196f3;
-        }
-
-        @media (max-width: 768px) {
-            .main-content {
-                grid-template-columns: 1fr;
-            }
-            
-            .color-matrix {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .blur-controls {
-                grid-template-columns: 1fr;
-            }
+        @media (max-width: 1024px) {
+            .main-content { grid-template-columns: 1fr; }
+            .qr-display { position: relative; top: 0; }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            <h1>🎨 Generador QR Ultra Personalizable</h1>
-            <p>Crea códigos QR únicos con colores avanzados, gradientes múltiples y logos perfectamente integrados</p>
-        </div>
+        <header class="header">
+            <h1>Generador QR Avanzado</h1>
+            <p>Configuración estructural, integración de marca y diseño paramétrico.</p>
+        </header>
 
         <div class="main-content">
             <div class="controls-panel">
-                <!-- Contenido del QR -->
+                
                 <div class="section">
-                    <h3>📝 Contenido del QR</h3>
-                    <div class="form-group">
-                        <label for="qrType">Tipo de contenido:</label>
-                        <select id="qrType">
-                            <option value="url">🔗 URL/Enlace</option>
-                            <option value="text">📄 Texto libre</option>
-                            <option value="email">📧 Email</option>
-                            <option value="phone">📞 Teléfono</option>
-                            <option value="wifi">📶 WiFi</option>
-                            <option value="vcard">👤 Contacto</option>
-                        </select>
+                    <h3>Datos y Estructura</h3>
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label for="qrType">Tipo de Datos</label>
+                            <select id="qrType">
+                                <option value="url">URL / Enlace</option>
+                                <option value="text">Texto Libre</option>
+                                <option value="email">Correo Electrónico</option>
+                                <option value="phone">Teléfono</option>
+                                <option value="wifi">Red Wi-Fi</option>
+                                <option value="vcard">Contacto vCard</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="errorCorrection">Corrección de Errores</label>
+                            <select id="errorCorrection">
+                                <option value="L">Bajo (7%)</option>
+                                <option value="M" selected>Medio (15%)</option>
+                                <option value="Q">Alto (25%)</option>
+                                <option value="H">Máximo (30%)</option>
+                            </select>
+                        </div>
                     </div>
+
                     <div id="contentInputs">
                         <div class="form-group">
-                            <label for="qrContent">URL o enlace:</label>
-                            <textarea id="qrContent" rows="3" placeholder="https://ejemplo.com">https://github.com/tu-usuario</textarea>
+                            <label for="qrContent">Destino</label>
+                            <textarea id="qrContent" rows="3" placeholder="https://ejemplo.com"></textarea>
                         </div>
                     </div>
                 </div>
 
-                <!-- Colores Múltiples Avanzados -->
                 <div class="section">
-                    <h3>🌈 Colores Múltiples y Difuminados</h3>
-                    
-                    <!-- Presets de colores avanzados -->
-                    <div class="form-group">
-                        <label>Paletas predefinidas:</label>
-                        <div class="advanced-colors">
-                            <div class="color-preset" style="background: linear-gradient(45deg, #667eea, #764ba2)" data-preset="default"></div>
-                            <div class="color-preset" style="background: linear-gradient(45deg, #f093fb, #f5576c)" data-preset="sunset"></div>
-                            <div class="color-preset" style="background: linear-gradient(45deg, #4facfe, #00f2fe)" data-preset="ocean"></div>
-                            <div class="color-preset" style="background: linear-gradient(45deg, #43e97b, #38f9d7)" data-preset="nature"></div>
-                            <div class="color-preset" style="background: linear-gradient(45deg, #fa709a, #fee140)" data-preset="warm"></div>
-                            <div class="color-preset" style="background: linear-gradient(45deg, #a8edea, #fed6e3)" data-preset="pastel"></div>
-                            <div class="color-preset" style="background: linear-gradient(45deg, #ff9a9e, #fecfef)" data-preset="pink"></div>
-                            <div class="color-preset" style="background: linear-gradient(45deg, #667eea, #764ba2)" data-preset="purple"></div>
-                            <div class="color-preset" style="background: linear-gradient(45deg, #f6d365, #fda085)" data-preset="gold"></div>
+                    <h3>Diseño Paramétrico</h3>
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label for="bgColor">Color de Fondo</label>
+                            <input type="color" id="bgColor" value="#ffffff">
                         </div>
-                    </div>
-
-                    <!-- Matriz de colores personalizables -->
-                    <div class="form-group">
-                        <label>Colores personalizados:</label>
-                        <div class="color-matrix">
-                            <div class="color-input-group">
-                                <input type="color" id="color1" class="color-input" value="#667eea">
-                                <div class="color-label">Color 1</div>
-                            </div>
-                            <div class="color-input-group">
-                                <input type="color" id="color2" class="color-input" value="#764ba2">
-                                <div class="color-label">Color 2</div>
-                            </div>
-                            <div class="color-input-group">
-                                <input type="color" id="color3" class="color-input" value="#f093fb">
-                                <div class="color-label">Color 3</div>
-                            </div>
-                            <div class="color-input-group">
-                                <input type="color" id="color4" class="color-input" value="#f5576c">
-                                <div class="color-label">Color 4</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Vista previa del gradiente -->
-                    <div class="gradient-preview" id="gradientPreview"></div>
-
-                    <!-- Controles de difuminado -->
-                    <div class="blur-controls">
-                        <div class="blur-control">
-                            <div class="slider-group">
-                                <div class="slider-header">
-                                    <label>Intensidad centro:</label>
-                                    <span class="slider-value" id="centerBlurValue">50%</span>
-                                </div>
-                                <input type="range" id="centerBlur" class="slider" min="0" max="100" value="50">
-                            </div>
-                        </div>
-                        <div class="blur-control">
-                            <div class="slider-group">
-                                <div class="slider-header">
-                                    <label>Difuminado bordes:</label>
-                                    <span class="slider-value" id="edgeBlurValue">25%</span>
-                                </div>
-                                <input type="range" id="edgeBlur" class="slider" min="0" max="100" value="25">
-                            </div>
+                        <div class="form-group">
+                            <label for="moduleShape">Morfología</label>
+                            <select id="moduleShape">
+                                <option value="square">Cuadrados</option>
+                                <option value="rounded" selected>Redondeados</option>
+                                <option value="circle">Circulares</option>
+                            </select>
                         </div>
                     </div>
 
                     <div class="slider-group">
                         <div class="slider-header">
-                            <label>Ángulo del gradiente:</label>
+                            <label>Margen Interno (Quiet Zone)</label>
+                            <span class="slider-value" id="qrMarginValue">20px</span>
+                        </div>
+                        <input type="range" id="qrMargin" min="0" max="60" value="20">
+                    </div>
+
+                    <div class="slider-group">
+                        <div class="slider-header">
+                            <label>Resolución de Salida</label>
+                            <span class="slider-value" id="qrSizeValue">500px</span>
+                        </div>
+                        <input type="range" id="qrSize" min="300" max="1200" step="50" value="500">
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h3>Colorimetría (Módulos)</h3>
+                    <div class="color-matrix">
+                        <div class="color-input-group">
+                            <label>Color 1</label>
+                            <input type="color" id="color1" value="#1e293b">
+                        </div>
+                        <div class="color-input-group">
+                            <label>Color 2</label>
+                            <input type="color" id="color2" value="#334155">
+                        </div>
+                        <div class="color-input-group">
+                            <label>Color 3</label>
+                            <input type="color" id="color3" value="#0f172a">
+                        </div>
+                        <div class="color-input-group">
+                            <label>Color 4</label>
+                            <input type="color" id="color4" value="#3b82f6">
+                        </div>
+                    </div>
+
+                    <div class="slider-group">
+                        <div class="slider-header">
+                            <label>Ángulo del Gradiente</label>
                             <span class="slider-value" id="angleValue">45°</span>
                         </div>
-                        <input type="range" id="gradientAngle" class="slider" min="0" max="360" value="45">
+                        <input type="range" id="gradientAngle" min="0" max="360" value="45">
                     </div>
 
-                    <!-- Modos de fusión -->
                     <div class="form-group">
-                        <label>Modo de fusión:</label>
-                        <div class="blend-modes">
-                            <div class="blend-mode active" data-blend="normal">Normal</div>
-                            <div class="blend-mode" data-blend="multiply">Multiplicar</div>
-                            <div class="blend-mode" data-blend="screen">Pantalla</div>
-                            <div class="blend-mode" data-blend="overlay">Superponer</div>
-                            <div class="blend-mode" data-blend="darken">Oscurecer</div>
-                            <div class="blend-mode" data-blend="lighten">Aclarar</div>
+                        <label>Modo de Fusión</label>
+                        <div class="toggle-group" id="blendModes">
+                            <button class="toggle-btn active" data-value="normal">Normal</button>
+                            <button class="toggle-btn" data-value="multiply">Multiply</button>
+                            <button class="toggle-btn" data-value="screen">Screen</button>
+                            <button class="toggle-btn" data-value="overlay">Overlay</button>
                         </div>
                     </div>
                 </div>
 
-                <!-- Efectos Especiales -->
                 <div class="section">
-                    <h3>✨ Efectos Especiales</h3>
-                    <div class="effect-showcase">
-                        <div class="effect-item active" data-effect="none">
-                            <div class="effect-preview"></div>
-                            <div>Normal</div>
-                        </div>
-                        <div class="effect-item" data-effect="shadow">
-                            <div class="effect-preview shadow"></div>
-                            <div>Sombra</div>
-                        </div>
-                        <div class="effect-item" data-effect="glow">
-                            <div class="effect-preview glow"></div>
-                            <div>Resplandor</div>
-                        </div>
-                        <div class="effect-item" data-effect="3d">
-                            <div class="effect-preview threed"></div>
-                            <div>Efecto 3D</div>
-                        </div>
-                    </div>
-
-                    <div class="slider-group">
-                        <div class="slider-header">
-                            <label>Intensidad del efecto:</label>
-                            <span class="slider-value" id="effectIntensityValue">50%</span>
-                        </div>
-                        <input type="range" id="effectIntensity" class="slider" min="0" max="100" value="50">
-                    </div>
-
-                    <div class="slider-group">
-                        <div class="slider-header">
-                            <label>Tamaño del QR:</label>
-                            <span class="slider-value" id="qrSizeValue">400px</span>
-                        </div>
-                        <input type="range" id="qrSize" class="slider" min="200" max="800" value="400">
-                    </div>
-                </div>
-
-                <!-- Logo Personalizado Mejorado -->
-                <div class="section">
-                    <h3>🖼️ Logo con Integración Avanzada</h3>
+                    <h3>Integración de Marca</h3>
                     <div class="logo-upload" id="logoUpload">
-                        <input type="file" id="logoInput" accept="image/*" style="display: none;">
-                        📁 Arrastra tu logo aquí o haz clic<br>
-                        <small>PNG, JPG, SVG (máx. 5MB)</small>
+                        <input type="file" id="logoInput" accept="image/png, image/jpeg, image/svg+xml" style="display: none;">
+                        <span>Seleccionar archivo o arrastrar imagen</span><br>
+                        <small style="opacity: 0.7; margin-top: 0.5rem; display: block;">PNG, JPG o SVG (Recomendado con transparencia)</small>
                     </div>
-                    <img id="logoPreview" class="logo-preview" style="display: none;">
                     
-                    <!-- Opciones de integración del logo -->
-                    <div class="form-group">
-                        <label>Integración con el QR:</label>
-                        <div class="integration-controls">
-                            <div class="integration-option active" data-integration="center">
-                                🎯 Centro
-                            </div>
-                            <div class="integration-option" data-integration="blend">
-                                🌊 Difuminado
-                            </div>
-                            <div class="integration-option" data-integration="overlay">
-                                📐 Superpuesto
-                            </div>
-                            <div class="integration-option" data-integration="cutout">
-                                ✂️ Recortado
-                            </div>
+                    <div class="form-group" style="margin-top: 1.5rem;">
+                        <label>Método de Integración</label>
+                        <div class="toggle-group" id="integrationModes">
+                            <button class="toggle-btn active" data-value="cutout">Recorte Exacto</button>
+                            <button class="toggle-btn" data-value="overlay">Capa Superpuesta</button>
+                            <button class="toggle-btn" data-value="blend">Multiply Blend</button>
                         </div>
                     </div>
 
                     <div class="slider-group">
                         <div class="slider-header">
-                            <label>Tamaño del logo:</label>
+                            <label>Escala de Marca</label>
                             <span class="slider-value" id="logoSizeValue">20%</span>
                         </div>
-                        <input type="range" id="logoSize" class="slider" min="5" max="40" value="20">
-                    </div>
-
-                    <div class="slider-group">
-                        <div class="slider-header">
-                            <label>Opacidad del logo:</label>
-                            <span class="slider-value" id="logoOpacityValue">100%</span>
-                        </div>
-                        <input type="range" id="logoOpacity" class="slider" min="20" max="100" value="100">
-                    </div>
-
-                    <div class="slider-group">
-                        <div class="slider-header">
-                            <label>Suavizado de bordes:</label>
-                            <span class="slider-value" id="logoBlurValue">0px</span>
-                        </div>
-                        <input type="range" id="logoBlur" class="slider" min="0" max="10" value="0">
+                        <input type="range" id="logoSize" min="5" max="35" value="20">
                     </div>
                 </div>
             </div>
 
             <div class="qr-display">
-                <canvas id="qrCanvas" class="qr-canvas" width="400" height="400"></canvas>
-                <button class="download-btn" onclick="downloadQR()">
-                    💾 Descargar QR Ultra
-                </button>
+                <canvas id="qrCanvas"></canvas>
+                <button class="download-btn" onclick="downloadQR()">Exportar Código QR</button>
                 <div id="messages" class="messages"></div>
             </div>
         </div>
@@ -689,115 +478,116 @@
     <script>
         let currentQR = null;
         let logoImage = null;
-        let selectedEffect = 'none';
-        let selectedIntegration = 'center';
+        let selectedIntegration = 'cutout';
         let selectedBlendMode = 'normal';
 
-        // Inicialización
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', () => {
             initializeEventListeners();
-            updateGradientPreview();
             generateQR();
         });
 
         function initializeEventListeners() {
-            // Eventos de contenido
-            document.getElementById('qrType').addEventListener('change', updateContentInputs);
-            document.getElementById('qrContent').addEventListener('input', generateQR);
-
-            // Eventos de colores
-            ['color1', 'color2', 'color3', 'color4'].forEach(id => {
-                document.getElementById(id).addEventListener('input', () => {
-                    updateGradientPreview();
-                    generateQR();
-                });
-            });
-
-            // Eventos de sliders
-            setupSliderEvents();
-
-            // Eventos de efectos
-            document.querySelectorAll('.effect-item').forEach(item => {
-                item.addEventListener('click', () => {
-                    document.querySelectorAll('.effect-item').forEach(i => i.classList.remove('active'));
-                    item.classList.add('active');
-                    selectedEffect = item.dataset.effect;
-                    generateQR();
-                });
-            });
-
-            // Eventos de integración de logo
-            document.querySelectorAll('.integration-option').forEach(option => {
-                option.addEventListener('click', () => {
-                    document.querySelectorAll('.integration-option').forEach(o => o.classList.remove('active'));
-                    option.classList.add('active');
-                    selectedIntegration = option.dataset.integration;
-                    generateQR();
-                });
-            });
-
-            // Eventos de modos de fusión
-            document.querySelectorAll('.blend-mode').forEach(mode => {
-                mode.addEventListener('click', () => {
-                    document.querySelectorAll('.blend-mode').forEach(m => m.classList.remove('active'));
-                    mode.classList.add('active');
-                    selectedBlendMode = mode.dataset.blend;
-                    generateQR();
-                });
-            });
-
-            // Eventos de presets de colores
-            document.querySelectorAll('.color-preset').forEach(preset => {
-                preset.addEventListener('click', () => {
-                    document.querySelectorAll('.color-preset').forEach(p => p.classList.remove('active'));
-                    preset.classList.add('active');
-                    applyColorPreset(preset.dataset.preset);
-                });
-            });
-
-            // Eventos de logo
-            document.getElementById('logoUpload').addEventListener('click', () => {
-                document.getElementById('logoInput').click();
-            });
+            // Inputs triggers render
+            const renderTriggers = [
+                'qrContent', 'errorCorrection', 'bgColor', 'moduleShape',
+                'color1', 'color2', 'color3', 'color4'
+            ];
             
-            document.getElementById('logoInput').addEventListener('change', handleLogoUpload);
-        }
+            renderTriggers.forEach(id => {
+                const el = document.getElementById(id);
+                if(el) el.addEventListener('input', generateQR);
+            });
 
-        function setupSliderEvents() {
+            document.getElementById('qrType').addEventListener('change', updateContentInputs);
+
+            // Sliders configuration
             const sliders = {
-                'centerBlur': { valueId: 'centerBlurValue', unit: '%' },
-                'edgeBlur': { valueId: 'edgeBlurValue', unit: '%' },
-                'gradientAngle': { valueId: 'angleValue', unit: '°' },
-                'effectIntensity': { valueId: 'effectIntensityValue', unit: '%' },
-                'qrSize': { valueId: 'qrSizeValue', unit: 'px' },
-                'logoSize': { valueId: 'logoSizeValue', unit: '%' },
-                'logoOpacity': { valueId: 'logoOpacityValue', unit: '%' },
-                'logoBlur': { valueId: 'logoBlurValue', unit: 'px' }
+                'qrSize': { display: 'qrSizeValue', suffix: 'px', callback: updateCanvasStyles },
+                'qrMargin': { display: 'qrMarginValue', suffix: 'px', callback: generateQR },
+                'gradientAngle': { display: 'angleValue', suffix: '°', callback: generateQR },
+                'logoSize': { display: 'logoSizeValue', suffix: '%', callback: generateQR }
             };
 
-            Object.entries(sliders).forEach(([sliderId, config]) => {
-                const slider = document.getElementById(sliderId);
-                const valueSpan = document.getElementById(config.valueId);
-                
-                if (slider && valueSpan) {
-                    slider.addEventListener('input', () => {
-                        valueSpan.textContent = slider.value + config.unit;
-                        
-                        if (sliderId === 'qrSize') {
-                            updateCanvasSize();
-                        }
-                        
-                        if (sliderId.includes('Blur') || sliderId.includes('gradient') || sliderId.includes('effect')) {
-                            updateGradientPreview();
-                        }
-                        
-                        generateQR();
+            Object.entries(sliders).forEach(([id, config]) => {
+                const slider = document.getElementById(id);
+                const display = document.getElementById(config.display);
+                if (slider && display) {
+                    slider.addEventListener('input', (e) => {
+                        display.textContent = e.target.value + config.suffix;
+                        if(config.callback) config.callback();
                     });
-                    
-                    // Inicializar valor
-                    valueSpan.textContent = slider.value + config.unit;
                 }
             });
+
+            // Toggle Groups Setup
+            setupToggleGroup('blendModes', (val) => { selectedBlendMode = val; generateQR(); });
+            setupToggleGroup('integrationModes', (val) => { selectedIntegration = val; generateQR(); });
+
+            // Logo Upload Setup
+            const uploadArea = document.getElementById('logoUpload');
+            const fileInput = document.getElementById('logoInput');
+
+            uploadArea.addEventListener('click', () => fileInput.click());
+            
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.style.borderColor = 'var(--primary)';
+            });
+            
+            uploadArea.addEventListener('dragleave', () => {
+                uploadArea.style.borderColor = '';
+            });
+
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.style.borderColor = '';
+                if(e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+            });
+
+            fileInput.addEventListener('change', (e) => {
+                if(e.target.files.length) handleFile(e.target.files[0]);
+            });
+        }
+
+        function setupToggleGroup(containerId, callback) {
+            const container = document.getElementById(containerId);
+            const buttons = container.querySelectorAll('.toggle-btn');
+            
+            buttons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    buttons.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    callback(btn.dataset.value);
+                });
+            });
+        }
+
+        function handleFile(file) {
+            if (!file.type.startsWith('image/')) {
+                showMessage('Formato de archivo no soportado.', 'error');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                logoImage = new Image();
+                logoImage.onload = () => {
+                    document.getElementById('logoUpload').classList.add('has-image');
+                    document.getElementById('logoUpload').querySelector('span').textContent = 'Imagen cargada: ' + file.name;
+                    generateQR();
+                };
+                logoImage.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function updateCanvasStyles() {
+            const size = document.getElementById('qrSize').value;
+            const canvas = document.getElementById('qrCanvas');
+            // Mantener tamaño visual manejable, pero resolución real alta
+            canvas.style.width = '100%';
+            canvas.style.maxWidth = '400px';
+            generateQR();
         }
 
         function updateContentInputs() {
@@ -807,420 +597,240 @@
             let html = '';
             switch(type) {
                 case 'url':
-                    html = '<div class="form-group"><label for="qrContent">URL o enlace:</label><textarea id="qrContent" rows="3" placeholder="https://ejemplo.com">https://github.com/tu-usuario</textarea></div>';
+                    html = `<div class="form-group"><label>URL</label><input type="text" id="qrContent" value="https://"></div>`;
                     break;
                 case 'text':
-                    html = '<div class="form-group"><label for="qrContent">Texto:</label><textarea id="qrContent" rows="4" placeholder="Escribe tu mensaje aquí...">¡Hola! Este es mi QR personalizado</textarea></div>';
+                    html = `<div class="form-group"><label>Contenido Textual</label><textarea id="qrContent" rows="4" placeholder="Ingresar datos..."></textarea></div>`;
                     break;
                 case 'email':
                     html = `
-                        <div class="form-group"><label>Email:</label><input type="email" id="emailAddr" placeholder="ejemplo@correo.com" value="contacto@miempresa.com"></div>
-                        <div class="form-group"><label>Asunto:</label><input type="text" id="emailSubject" placeholder="Asunto del mensaje" value="Consulta desde QR"></div>
-                        <div class="form-group"><label>Mensaje:</label><textarea id="emailBody" rows="3" placeholder="Mensaje...">Hola, me interesa conocer más sobre tus servicios.</textarea></div>
+                        <div class="form-group"><label>Dirección Email</label><input type="email" id="eAddr"></div>
+                        <div class="form-group"><label>Asunto</label><input type="text" id="eSubj"></div>
+                        <div class="form-group"><label>Cuerpo del Mensaje</label><textarea id="eBody" rows="2"></textarea></div>
                     `;
                     break;
                 case 'phone':
-                    html = '<div class="form-group"><label>Teléfono:</label><input type="tel" id="phoneNumber" placeholder="+1234567890" value="+1234567890"></div>';
+                    html = `<div class="form-group"><label>Número de Teléfono</label><input type="tel" id="pNum" placeholder="+1234567890"></div>`;
                     break;
                 case 'wifi':
                     html = `
-                        <div class="form-group"><label>Nombre de red (SSID):</label><input type="text" id="wifiSSID" placeholder="Mi-WiFi" value="MiRed_WiFi"></div>
-                        <div class="form-group"><label>Contraseña:</label><input type="password" id="wifiPassword" placeholder="contraseña123" value="MiPassword123"></div>
-                        <div class="form-group"><label>Seguridad:</label><select id="wifiSecurity"><option value="WPA">WPA/WPA2</option><option value="WEP">WEP</option><option value="nopass">Sin contraseña</option></select></div>
+                        <div class="form-group"><label>SSID (Nombre de red)</label><input type="text" id="wSSID"></div>
+                        <div class="form-group"><label>Contraseña</label><input type="password" id="wPass"></div>
+                        <div class="form-group">
+                            <label>Seguridad</label>
+                            <select id="wSec">
+                                <option value="WPA">WPA/WPA2</option>
+                                <option value="WEP">WEP</option>
+                                <option value="nopass">Abierta</option>
+                            </select>
+                        </div>
                     `;
                     break;
                 case 'vcard':
                     html = `
-                        <div class="form-group"><label>Nombre:</label><input type="text" id="vcardName" placeholder="Juan Pérez" value="Mi Nombre"></div>
-                        <div class="form-group"><label>Empresa:</label><input type="text" id="vcardCompany" placeholder="Mi Empresa" value="Mi Empresa S.A."></div>
-                        <div class="form-group"><label>Teléfono:</label><input type="tel" id="vcardPhone" placeholder="+1234567890" value="+1234567890"></div>
-                        <div class="form-group"><label>Email:</label><input type="email" id="vcardEmail" placeholder="juan@correo.com" value="contacto@miempresa.com"></div>
+                        <div class="grid-2">
+                            <div class="form-group"><label>Nombre</label><input type="text" id="vName"></div>
+                            <div class="form-group"><label>Organización</label><input type="text" id="vOrg"></div>
+                            <div class="form-group"><label>Teléfono</label><input type="tel" id="vPhone"></div>
+                            <div class="form-group"><label>Email</label><input type="email" id="vEmail"></div>
+                        </div>
                     `;
                     break;
             }
             
             container.innerHTML = html;
-            
-            // Agregar eventos a los nuevos elementos
-            container.querySelectorAll('input, textarea, select').forEach(element => {
-                element.addEventListener('input', generateQR);
+            container.querySelectorAll('input, textarea, select').forEach(el => {
+                el.addEventListener('input', generateQR);
             });
-            
             generateQR();
         }
 
-        function applyColorPreset(preset) {
-            const presets = {
-                default: ['#667eea', '#764ba2', '#f093fb', '#f5576c'],
-                sunset: ['#ff9a56', '#ffad56', '#c850c0', '#4158d0'],
-                ocean: ['#4facfe', '#00f2fe', '#43e97b', '#38f9d7'],
-                nature: ['#43e97b', '#38f9d7', '#667eea', '#764ba2'],
-                warm: ['#fa709a', '#fee140', '#ff9a56', '#c850c0'],
-                pastel: ['#a8edea', '#fed6e3', '#d299c2', '#fef9d7'],
-                pink: ['#ff9a9e', '#fecfef', '#ffecd2', '#fcb69f'],
-                purple: ['#667eea', '#764ba2', '#a8caba', '#5d4e75'],
-                gold: ['#f6d365', '#fda085', '#fd746c', '#ff9068']
-            };
-
-            if (presets[preset]) {
-                const colors = presets[preset];
-                document.getElementById('color1').value = colors[0];
-                document.getElementById('color2').value = colors[1];
-                document.getElementById('color3').value = colors[2];
-                document.getElementById('color4').value = colors[3];
-                updateGradientPreview();
-                generateQR();
-            }
-        }
-
-        function updateGradientPreview() {
-            const color1 = document.getElementById('color1').value;
-            const color2 = document.getElementById('color2').value;
-            const color3 = document.getElementById('color3').value;
-            const color4 = document.getElementById('color4').value;
-            const angle = document.getElementById('gradientAngle').value;
-            
-            const gradient = `linear-gradient(${angle}deg, ${color1}, ${color2}, ${color3}, ${color4})`;
-            document.getElementById('gradientPreview').style.background = gradient;
-        }
-
-        function updateCanvasSize() {
-            const size = parseInt(document.getElementById('qrSize').value);
-            const canvas = document.getElementById('qrCanvas');
-            canvas.width = size;
-            canvas.height = size;
-            canvas.style.width = Math.min(size, 400) + 'px';
-            canvas.style.height = Math.min(size, 400) + 'px';
-        }
-
-        function handleLogoUpload(event) {
-            const file = event.target.files[0];
-            if (file) {
-                if (file.size > 5 * 1024 * 1024) {
-                    showMessage('La imagen es demasiado grande. Máximo 5MB.', 'error');
-                    return;
+        function getPayload() {
+            const type = document.getElementById('qrType').value;
+            try {
+                switch(type) {
+                    case 'url': 
+                    case 'text': 
+                        return document.getElementById('qrContent')?.value || ' ';
+                    case 'email':
+                        return `mailto:${document.getElementById('eAddr')?.value || ''}?subject=${encodeURIComponent(document.getElementById('eSubj')?.value || '')}&body=${encodeURIComponent(document.getElementById('eBody')?.value || '')}`;
+                    case 'phone':
+                        return `tel:${document.getElementById('pNum')?.value || ''}`;
+                    case 'wifi':
+                        return `WIFI:T:${document.getElementById('wSec')?.value || 'WPA'};S:${document.getElementById('wSSID')?.value || ''};P:${document.getElementById('wPass')?.value || ''};;`;
+                    case 'vcard':
+                        return `BEGIN:VCARD\nVERSION:3.0\nFN:${document.getElementById('vName')?.value || ''}\nORG:${document.getElementById('vOrg')?.value || ''}\nTEL:${document.getElementById('vPhone')?.value || ''}\nEMAIL:${document.getElementById('vEmail')?.value || ''}\nEND:VCARD`;
+                    default: return ' ';
                 }
-
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    logoImage = new Image();
-                    logoImage.onload = function() {
-                        document.getElementById('logoPreview').src = e.target.result;
-                        document.getElementById('logoPreview').style.display = 'block';
-                        document.getElementById('logoUpload').classList.add('has-image');
-                        generateQR();
-                    };
-                    logoImage.src = e.target.result;
-                };
-                reader.readAsDataURL(file);
+            } catch(e) {
+                return ' ';
             }
         }
 
         function generateQR() {
-            try {
-                const content = getQRContent();
-                if (!content) {
-                    showMessage('Por favor ingresa contenido para el QR', 'error');
-                    return;
-                }
+            if (typeof qrcode === 'undefined') return;
 
-                if (typeof qrcode === 'undefined') {
-                    showMessage('Cargando biblioteca QR...', 'info');
-                    return;
-                }
-
-                const qr = qrcode(0, 'M');
-                qr.addData(content);
-                qr.make();
-
-                currentQR = qr;
-                drawAdvancedQR(qr);
-                showMessage('QR generado exitosamente', 'success');
-
-            } catch (error) {
-                console.error('Error generando QR:', error);
-                showMessage('Error al generar el QR: ' + error.message, 'error');
-            }
-        }
-
-        function getQRContent() {
-            const type = document.getElementById('qrType').value;
+            const payload = getPayload();
+            const errLevel = document.getElementById('errorCorrection').value;
             
-            switch(type) {
-                case 'url':
-                case 'text':
-                    return document.getElementById('qrContent')?.value || '';
-                    
-                case 'email':
-                    const email = document.getElementById('emailAddr')?.value || '';
-                    const subject = document.getElementById('emailSubject')?.value || '';
-                    const body = document.getElementById('emailBody')?.value || '';
-                    return `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-                    
-                case 'phone':
-                    const phone = document.getElementById('phoneNumber')?.value || '';
-                    return `tel:${phone}`;
-                    
-                case 'wifi':
-                    const ssid = document.getElementById('wifiSSID')?.value || '';
-                    const password = document.getElementById('wifiPassword')?.value || '';
-                    const security = document.getElementById('wifiSecurity')?.value || 'WPA';
-                    return `WIFI:T:${security};S:${ssid};P:${password};;`;
-                    
-                case 'vcard':
-                    const name = document.getElementById('vcardName')?.value || '';
-                    const company = document.getElementById('vcardCompany')?.value || '';
-                    const vcardPhone = document.getElementById('vcardPhone')?.value || '';
-                    const vcardEmail = document.getElementById('vcardEmail')?.value || '';
-                    return `BEGIN:VCARD\nVERSION:3.0\nFN:${name}\nORG:${company}\nTEL:${vcardPhone}\nEMAIL:${vcardEmail}\nEND:VCARD`;
-                    
-                default:
-                    return '';
+            try {
+                const qr = qrcode(0, errLevel);
+                qr.addData(payload);
+                qr.make();
+                
+                currentQR = qr;
+                renderCanvas(qr);
+            } catch (err) {
+                console.warn("Generación pendiente: datos insuficientes o error de formato.", err);
             }
         }
 
-        function drawAdvancedQR(qr) {
+        function renderCanvas(qr) {
             const canvas = document.getElementById('qrCanvas');
             const ctx = canvas.getContext('2d');
+            
+            // Dimensions
             const size = parseInt(document.getElementById('qrSize').value);
+            const margin = parseInt(document.getElementById('qrMargin').value);
+            const renderSize = size - (margin * 2);
+            
+            canvas.width = size;
+            canvas.height = size;
+            
             const modules = qr.getModuleCount();
-            const moduleSize = size / modules;
+            const moduleSize = renderSize / modules;
 
-            // Limpiar canvas
-            ctx.clearRect(0, 0, size, size);
+            // Render Background
+            ctx.fillStyle = document.getElementById('bgColor').value;
+            ctx.fillRect(0, 0, size, size);
 
-            // Obtener configuraciones
-            const color1 = document.getElementById('color1').value;
-            const color2 = document.getElementById('color2').value;
-            const color3 = document.getElementById('color3').value;
-            const color4 = document.getElementById('color4').value;
+            // Calculate Gradient
             const angle = parseInt(document.getElementById('gradientAngle').value);
-            const centerBlur = parseInt(document.getElementById('centerBlur').value);
-            const edgeBlur = parseInt(document.getElementById('edgeBlur').value);
-            const effectIntensity = parseInt(document.getElementById('effectIntensity').value);
-
-            // Crear gradiente avanzado con múltiples colores
-            const radians = (angle * Math.PI) / 180;
-            const x1 = size / 2 - (Math.cos(radians) * size) / 2;
-            const y1 = size / 2 - (Math.sin(radians) * size) / 2;
-            const x2 = size / 2 + (Math.cos(radians) * size) / 2;
-            const y2 = size / 2 + (Math.sin(radians) * size) / 2;
+            const rad = (angle * Math.PI) / 180;
+            const x1 = size/2 - Math.cos(rad) * size/2;
+            const y1 = size/2 - Math.sin(rad) * size/2;
+            const x2 = size/2 + Math.cos(rad) * size/2;
+            const y2 = size/2 + Math.sin(rad) * size/2;
 
             const gradient = ctx.createLinearGradient(x1, y1, x2, y2);
-            gradient.addColorStop(0, color1);
-            gradient.addColorStop(0.33, color2);
-            gradient.addColorStop(0.66, color3);
-            gradient.addColorStop(1, color4);
+            gradient.addColorStop(0, document.getElementById('color1').value);
+            gradient.addColorStop(0.33, document.getElementById('color2').value);
+            gradient.addColorStop(0.66, document.getElementById('color3').value);
+            gradient.addColorStop(1, document.getElementById('color4').value);
 
-            // Aplicar modo de fusión
             ctx.globalCompositeOperation = selectedBlendMode;
+            ctx.fillStyle = gradient;
 
-            // Dibujar módulos con efectos avanzados
+            const shape = document.getElementById('moduleShape').value;
+            const logoConfig = getLogoConfig(modules);
+
             for (let row = 0; row < modules; row++) {
                 for (let col = 0; col < modules; col++) {
                     if (qr.isDark(row, col)) {
-                        // Verificar si está en el área del logo
-                        if (logoImage && isInLogoArea(row, col, modules)) {
-                            if (selectedIntegration === 'cutout') {
-                                continue; // Saltar módulos en área del logo
-                            }
+                        
+                        // Evaluar recorte de logo
+                        if (logoImage && selectedIntegration === 'cutout' && isInsideLogo(row, col, logoConfig)) {
+                            continue; 
                         }
 
-                        const x = col * moduleSize;
-                        const y = row * moduleSize;
+                        const x = margin + (col * moduleSize);
+                        const y = margin + (row * moduleSize);
 
-                        // Calcular intensidad basada en distancia al centro para efectos de difuminado
-                        const centerX = modules / 2;
-                        const centerY = modules / 2;
-                        const distance = Math.sqrt(Math.pow(col - centerX, 2) + Math.pow(row - centerY, 2));
-                        const maxDistance = Math.sqrt(Math.pow(modules, 2));
-                        const normalizedDistance = distance / maxDistance;
-
-                        // Aplicar difuminado del centro
-                        let opacity = 1;
-                        if (centerBlur > 0) {
-                            const centerEffect = 1 - (normalizedDistance * (centerBlur / 100));
-                            opacity *= Math.max(0.1, centerEffect);
-                        }
-
-                        // Aplicar difuminado de bordes
-                        if (edgeBlur > 0) {
-                            const edgeEffect = 1 - ((1 - normalizedDistance) * (edgeBlur / 100));
-                            opacity *= Math.max(0.1, edgeEffect);
-                        }
-
-                        ctx.save();
-                        ctx.globalAlpha = opacity;
-
-                        // Aplicar efectos especiales
-                        applySpecialEffects(ctx, x, y, moduleSize, effectIntensity);
-
-                        // Dibujar módulo con gradiente
-                        ctx.fillStyle = gradient;
-                        drawModule(ctx, x, y, moduleSize);
-
-                        ctx.restore();
+                        drawModuleShape(ctx, x, y, moduleSize, shape);
                     }
                 }
             }
 
-            // Resetear modo de composición
             ctx.globalCompositeOperation = 'source-over';
 
-            // Dibujar logo si existe
             if (logoImage) {
-                drawAdvancedLogo(ctx, size, modules);
+                renderLogo(ctx, size, margin, renderSize);
             }
         }
 
-        function applySpecialEffects(ctx, x, y, size, intensity) {
-            const effectStrength = intensity / 100;
+        function drawModuleShape(ctx, x, y, size, shape) {
+            // Un pequeño padding interno para que no se peguen si no son cuadrados exactos
+            const pad = shape === 'square' ? 0 : size * 0.05; 
+            const drawSize = size - (pad * 2);
+            const drawX = x + pad;
+            const drawY = y + pad;
 
-            switch (selectedEffect) {
-                case 'shadow':
-                    ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
-                    ctx.shadowBlur = 4 * effectStrength;
-                    ctx.shadowOffsetX = 2 * effectStrength;
-                    ctx.shadowOffsetY = 2 * effectStrength;
-                    break;
-
-                case 'glow':
-                    ctx.shadowColor = document.getElementById('color1').value;
-                    ctx.shadowBlur = 8 * effectStrength;
-                    ctx.shadowOffsetX = 0;
-                    ctx.shadowOffsetY = 0;
-                    break;
-
-                case '3d':
-                    // Crear efecto 3D con múltiples capas
-                    const offset = 2 * effectStrength;
-                    ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
-                    ctx.fillRect(x + offset, y + offset, size, size);
-                    break;
-            }
-        }
-
-        function drawModule(ctx, x, y, size) {
-            // Dibujar módulo con bordes ligeramente redondeados para mejor apariencia
-            const radius = size * 0.1;
-            
             ctx.beginPath();
-            ctx.roundRect(x, y, size, size, radius);
+            if (shape === 'circle') {
+                ctx.arc(drawX + drawSize/2, drawY + drawSize/2, drawSize/2, 0, 2 * Math.PI);
+            } else if (shape === 'rounded') {
+                const radius = drawSize * 0.3;
+                if(ctx.roundRect) {
+                    ctx.roundRect(drawX, drawY, drawSize, drawSize, radius);
+                } else {
+                    ctx.rect(drawX, drawY, drawSize, drawSize); // Fallback
+                }
+            } else {
+                ctx.rect(drawX, drawY, drawSize, drawSize);
+            }
             ctx.fill();
-
-            // Resetear sombras
-            ctx.shadowColor = 'transparent';
-            ctx.shadowBlur = 0;
-            ctx.shadowOffsetX = 0;
-            ctx.shadowOffsetY = 0;
         }
 
-        function isInLogoArea(row, col, modules) {
-            const logoSizePercent = parseInt(document.getElementById('logoSize').value);
-            const logoAreaSize = Math.floor((modules * logoSizePercent) / 100);
-            const center = Math.floor(modules / 2);
-            const logoRadius = Math.floor(logoAreaSize / 2);
-
-            const distance = Math.sqrt(Math.pow(col - center, 2) + Math.pow(row - center, 2));
-            return distance <= logoRadius;
+        function getLogoConfig(modulesCount) {
+            const logoPercent = parseInt(document.getElementById('logoSize').value) / 100;
+            const logoModules = Math.floor(modulesCount * logoPercent);
+            const center = Math.floor(modulesCount / 2);
+            const offset = Math.floor(logoModules / 2);
+            
+            return {
+                start: center - offset - 1,
+                end: center + offset + 1
+            };
         }
 
-        function drawAdvancedLogo(ctx, canvasSize, modules) {
-            const logoSizePercent = parseInt(document.getElementById('logoSize').value);
-            const logoOpacityPercent = parseInt(document.getElementById('logoOpacity').value);
-            const logoBlurPx = parseInt(document.getElementById('logoBlur').value);
+        function isInsideLogo(row, col, config) {
+            return (row >= config.start && row <= config.end && 
+                    col >= config.start && col <= config.end);
+        }
 
-            const logoSize = (canvasSize * logoSizePercent) / 100;
-            const logoX = (canvasSize - logoSize) / 2;
-            const logoY = (canvasSize - logoSize) / 2;
+        function renderLogo(ctx, totalSize, margin, renderSize) {
+            const logoPercent = parseInt(document.getElementById('logoSize').value) / 100;
+            const logoDrawSize = renderSize * logoPercent;
+            const center = totalSize / 2;
+            const lx = center - (logoDrawSize / 2);
+            const ly = center - (logoDrawSize / 2);
 
             ctx.save();
-            ctx.globalAlpha = logoOpacityPercent / 100;
 
-            // Aplicar desenfoque si está configurado
-            if (logoBlurPx > 0) {
-                ctx.filter = `blur(${logoBlurPx}px)`;
+            if (selectedIntegration === 'blend') {
+                ctx.globalCompositeOperation = 'multiply';
+            } else if (selectedIntegration === 'overlay') {
+                // Fondo blanco con bordes redondeados tras el logo
+                const bgPadding = logoDrawSize * 0.1;
+                ctx.fillStyle = document.getElementById('bgColor').value;
+                ctx.beginPath();
+                if(ctx.roundRect) {
+                    ctx.roundRect(lx - bgPadding, ly - bgPadding, logoDrawSize + (bgPadding*2), logoDrawSize + (bgPadding*2), 8);
+                } else {
+                    ctx.fillRect(lx - bgPadding, ly - bgPadding, logoDrawSize + (bgPadding*2), logoDrawSize + (bgPadding*2));
+                }
+                ctx.fill();
             }
 
-            // Aplicar diferentes modos de integración
-            switch (selectedIntegration) {
-                case 'center':
-                    // Logo centrado simple
-                    ctx.drawImage(logoImage, logoX, logoY, logoSize, logoSize);
-                    break;
-
-                case 'blend':
-                    // Logo con fusión suave
-                    ctx.globalCompositeOperation = 'multiply';
-                    ctx.drawImage(logoImage, logoX, logoY, logoSize, logoSize);
-                    break;
-
-                case 'overlay':
-                    // Logo superpuesto con fondo
-                    const padding = logoSize * 0.1;
-                    ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
-                    ctx.beginPath();
-                    ctx.roundRect(logoX - padding, logoY - padding, logoSize + padding * 2, logoSize + padding * 2, 10);
-                    ctx.fill();
-                    ctx.drawImage(logoImage, logoX, logoY, logoSize, logoSize);
-                    break;
-
-                case 'cutout':
-                    // Logo en área recortada (ya manejado en drawAdvancedQR)
-                    ctx.drawImage(logoImage, logoX, logoY, logoSize, logoSize);
-                    break;
-            }
-
+            ctx.drawImage(logoImage, lx, ly, logoDrawSize, logoDrawSize);
             ctx.restore();
         }
 
         function showMessage(text, type) {
-            const messagesContainer = document.getElementById('messages');
-            const message = document.createElement('div');
-            message.className = `message ${type}`;
-            message.textContent = text;
-            
-            messagesContainer.innerHTML = '';
-            messagesContainer.appendChild(message);
-            
-            setTimeout(() => {
-                message.remove();
-            }, 5000);
+            const container = document.getElementById('messages');
+            container.innerHTML = `<div class="message ${type}">${text}</div>`;
+            setTimeout(() => container.innerHTML = '', 4000);
         }
 
         function downloadQR() {
-            if (!currentQR) {
-                showMessage('Primero genera un código QR', 'error');
-                return;
-            }
-
+            if (!currentQR) return;
             const canvas = document.getElementById('qrCanvas');
             const link = document.createElement('a');
-            link.download = `qr-ultra-personalizado-${Date.now()}.png`;
-            link.href = canvas.toDataURL();
+            link.download = `qr_export_${new Date().getTime()}.png`;
+            link.href = canvas.toDataURL('image/png');
             link.click();
-            
-            showMessage('QR descargado exitosamente', 'success');
+            showMessage('Exportación completada', 'success');
         }
-
-        // Polyfill para roundRect
-        if (!CanvasRenderingContext2D.prototype.roundRect) {
-            CanvasRenderingContext2D.prototype.roundRect = function(x, y, width, height, radius) {
-                if (width < 2 * radius) radius = width / 2;
-                if (height < 2 * radius) radius = height / 2;
-                this.beginPath();
-                this.moveTo(x + radius, y);
-                this.arcTo(x + width, y, x + width, y + radius, radius);
-                this.arcTo(x + width, y + height, x + width - radius, y + height, radius);
-                this.arcTo(x, y + height, x, y + height - radius, radius);
-                this.arcTo(x, y, x + radius, y, radius);
-                this.closePath();
-                return this;
-            };
-        }
-
-        // Actualizar tamaño inicial del canvas
-        updateCanvasSize();
     </script>
 </body>
 </html>
