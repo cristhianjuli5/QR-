@@ -264,8 +264,8 @@
                             <label for="errorCorrection">Corrección de Errores</label>
                             <select id="errorCorrection">
                                 <option value="L">Bajo (7%)</option>
-                                <option value="M" selected>Medio (15%)</option>
-                                <option value="Q">Alto (25%)</option>
+                                <option value="M">Medio (15%)</option>
+                                <option value="Q" selected>Alto (25%)</option>
                                 <option value="H">Máximo (30%)</option>
                             </select>
                         </div>
@@ -285,6 +285,16 @@
                         </label>
                         
                         <div id="sequenceConfig" style="display: none; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem;">
+                            <!-- Nuevos campos agregados -->
+                            <div class="form-group">
+                                <label>Hostname / Equipo</label>
+                                <input type="text" id="seqHostname" placeholder="Ej: Mac Studio Fotografía">
+                            </div>
+                            <div class="form-group">
+                                <label>Responsable</label>
+                                <input type="text" id="seqResponsable" placeholder="Ej: David Cano">
+                            </div>
+                            
                             <div class="form-group">
                                 <label>Prefijo</label>
                                 <input type="text" id="seqPrefix" placeholder="FDS-" value="FDS-">
@@ -308,7 +318,7 @@
                             <div class="form-group" style="grid-column: 1 / -1;">
                                 <label class="checkbox-label" style="font-size: 0.875rem;">
                                     <input type="checkbox" id="seqDrawLabel" checked>
-                                    Imprimir etiqueta del consecutivo en la imagen
+                                    Imprimir etiquetas de texto (Responsable y Consecutivo) en la imagen
                                 </label>
                             </div>
                         </div>
@@ -453,7 +463,8 @@
                 generateQR();
             });
 
-            ['seqPrefix', 'seqValue', 'seqPadding', 'seqAppendType'].forEach(id => {
+            // Añadidos seqHostname y seqResponsable a los triggers
+            ['seqPrefix', 'seqValue', 'seqPadding', 'seqAppendType', 'seqHostname', 'seqResponsable'].forEach(id => {
                 document.getElementById(id).addEventListener('input', generateQR);
             });
 
@@ -606,10 +617,8 @@
                         basePayload += ' ' + seqStr;
                     }
                 } else if (type === 'vcard') {
-                    // Si es vcard, agregarlo discretamente al final o modificar organización
                     basePayload = basePayload.replace('END:VCARD', `NOTE:ID-${seqStr}\nEND:VCARD`);
                 } else {
-                    // Fallback para otros
                     basePayload += ' ' + seqStr;
                 }
             }
@@ -644,13 +653,19 @@
             const margin = parseInt(document.getElementById('qrMargin').value);
             const renderSize = size - (margin * 2);
 
-            // Calcular área para etiqueta de consecutivo
+            // Calcular áreas para etiquetas de texto
             const isSeqEnabled = document.getElementById('enableSequence').checked;
             const drawLabel = isSeqEnabled && document.getElementById('seqDrawLabel').checked;
-            const labelHeight = drawLabel ? Math.max(40, size * 0.1) : 0;
+            
+            const hostname = isSeqEnabled ? document.getElementById('seqHostname').value.trim() : '';
+            const responsable = isSeqEnabled ? document.getElementById('seqResponsable').value.trim() : '';
+            
+            const hasTopLabel = drawLabel && (hostname !== '' || responsable !== '');
+            const topLabelHeight = hasTopLabel ? Math.max(80, size * 0.18) : 0;
+            const bottomLabelHeight = drawLabel ? Math.max(40, size * 0.1) : 0;
             
             canvas.width = size;
-            canvas.height = size + labelHeight;
+            canvas.height = size + topLabelHeight + bottomLabelHeight;
             
             // Fondo general
             ctx.fillStyle = document.getElementById('bgColor').value;
@@ -659,13 +674,13 @@
             const modules = qr.getModuleCount();
             const moduleSize = renderSize / modules;
 
-            // Configurar el gradiente
+            // Configurar el gradiente (ajustado al área del QR)
             const angle = parseInt(document.getElementById('gradientAngle').value);
             const rad = (angle * Math.PI) / 180;
             const x1 = size/2 - Math.cos(rad) * size/2;
-            const y1 = size/2 - Math.sin(rad) * size/2;
+            const y1 = topLabelHeight + size/2 - Math.sin(rad) * size/2;
             const x2 = size/2 + Math.cos(rad) * size/2;
-            const y2 = size/2 + Math.sin(rad) * size/2;
+            const y2 = topLabelHeight + size/2 + Math.sin(rad) * size/2;
 
             const gradient = ctx.createLinearGradient(x1, y1, x2, y2);
             gradient.addColorStop(0, document.getElementById('color1').value);
@@ -679,7 +694,7 @@
             const shape = document.getElementById('moduleShape').value;
             const logoConfig = getLogoConfig(modules);
 
-            // Dibujar QR
+            // Dibujar QR con offset vertical
             for (let row = 0; row < modules; row++) {
                 for (let col = 0; col < modules; col++) {
                     if (qr.isDark(row, col)) {
@@ -687,7 +702,7 @@
                             continue; 
                         }
                         const x = margin + (col * moduleSize);
-                        const y = margin + (row * moduleSize);
+                        const y = topLabelHeight + margin + (row * moduleSize);
                         drawModuleShape(ctx, x, y, moduleSize, shape);
                     }
                 }
@@ -696,19 +711,37 @@
             ctx.globalCompositeOperation = 'source-over';
 
             if (logoImage) {
-                renderLogo(ctx, size, margin, renderSize);
+                renderLogo(ctx, size, margin, renderSize, topLabelHeight);
             }
 
-            // Renderizar la etiqueta del consecutivo si está activa
+            // Renderizar etiquetas superiores (Hostname y Responsable)
+            if (hasTopLabel) {
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'top';
+                let textY = topLabelHeight * 0.15;
+                
+                if (hostname) {
+                    ctx.fillStyle = document.getElementById('color1').value;
+                    ctx.font = `bold ${Math.floor(size * 0.055)}px Inter, sans-serif`;
+                    ctx.fillText(hostname, size / 2, textY);
+                    textY += size * 0.07;
+                }
+                if (responsable) {
+                    ctx.fillStyle = document.getElementById('color4').value; // Color de acento
+                    ctx.font = `bold ${Math.floor(size * 0.045)}px Inter, sans-serif`;
+                    ctx.fillText(`Resp: ${responsable}`, size / 2, textY);
+                }
+            }
+
+            // Renderizar la etiqueta del consecutivo inferior
             if (drawLabel) {
                 const seqStr = getCurrentSequenceString();
-                // Usa el color más oscuro de la paleta para que contraste con el fondo (asumiendo fondo claro para impresión)
                 ctx.fillStyle = document.getElementById('color1').value; 
-                ctx.font = `bold ${Math.floor(size * 0.045)}px Inter, sans-serif`;
+                ctx.font = `bold ${Math.floor(size * 0.05)}px Inter, monospace`;
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
-                // Posicionar justo debajo del QR
-                ctx.fillText(seqStr, size / 2, size + (labelHeight / 2) - (labelHeight * 0.1));
+                // Posicionar debajo del QR
+                ctx.fillText(seqStr, size / 2, topLabelHeight + size + (bottomLabelHeight / 2));
             }
         }
 
@@ -743,12 +776,12 @@
             return (row >= config.start && row <= config.end && col >= config.start && col <= config.end);
         }
 
-        function renderLogo(ctx, totalSize, margin, renderSize) {
+        function renderLogo(ctx, totalSize, margin, renderSize, offsetY) {
             const logoPercent = parseInt(document.getElementById('logoSize').value) / 100;
             const logoDrawSize = renderSize * logoPercent;
             const center = totalSize / 2;
             const lx = center - (logoDrawSize / 2);
-            const ly = center - (logoDrawSize / 2);
+            const ly = offsetY + center - (logoDrawSize / 2);
 
             ctx.save();
             if (selectedIntegration === 'blend') {
@@ -787,7 +820,9 @@
 
             if (isSeqEnabled) {
                 const seqStr = getCurrentSequenceString();
-                filename = `qr_${seqStr}.png`;
+                const hostname = document.getElementById('seqHostname').value.trim().replace(/[^a-z0-9]/gi, '_').toLowerCase();
+                const suffix = hostname ? `_${hostname}` : '';
+                filename = `qr_${seqStr}${suffix}.png`;
                 successMsg = `Exportado: ${filename}. Generando el siguiente...`;
             }
 
@@ -801,7 +836,6 @@
             if (isSeqEnabled) {
                 const seqInput = document.getElementById('seqValue');
                 seqInput.value = parseInt(seqInput.value) + 1;
-                // El cambio en el input no dispara el evento 'input' automáticamente mediante JS, forzamos renderizado:
                 generateQR();
             }
         }
