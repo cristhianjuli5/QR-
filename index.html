@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generador QR Profesional con Consecutivo</title>
+    <title>Generador QR Profesional</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
     <style>
         :root {
-            --bg-color: #0f172a;
-            --surface: #1e293b;
+            --bg-body: #0f172a;
+            --bg-surface: #1e293b;
             --surface-hover: #334155;
             --border: #334155;
             --border-focus: #3b82f6;
@@ -16,10 +16,13 @@
             --text-muted: #94a3b8;
             --primary: #3b82f6;
             --primary-hover: #2563eb;
+            --primary-light: rgba(59, 130, 246, 0.15);
             --danger: #ef4444;
             --success: #10b981;
-            --radius-md: 8px;
-            --radius-lg: 12px;
+            --radius-md: 10px;
+            --radius-lg: 16px;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.4);
         }
 
         * {
@@ -30,7 +33,7 @@
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-color);
+            background-color: var(--bg-body);
             color: var(--text-main);
             min-height: 100vh;
             padding: 2rem;
@@ -38,20 +41,19 @@
         }
 
         .container {
-            max-width: 1400px;
+            max-width: 1200px;
             margin: 0 auto;
-            background-color: var(--bg-color);
         }
 
         .header {
-            padding-bottom: 2rem;
-            border-bottom: 1px solid var(--border);
+            padding-bottom: 1.5rem;
             margin-bottom: 2rem;
+            text-align: center;
         }
 
         .header h1 {
-            font-size: 2rem;
-            font-weight: 600;
+            font-size: 2.25rem;
+            font-weight: 700;
             letter-spacing: -0.025em;
             color: var(--text-main);
         }
@@ -59,49 +61,55 @@
         .header p {
             color: var(--text-muted);
             margin-top: 0.5rem;
+            font-size: 1.1rem;
         }
 
         .main-content {
             display: grid;
             grid-template-columns: 1fr 450px;
             gap: 2rem;
+            align-items: start;
         }
 
         .controls-panel {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            display: flex;
+            flex-direction: column;
             gap: 1.5rem;
-            align-content: start;
         }
 
         .qr-display {
             position: sticky;
             top: 2rem;
-            background: var(--surface);
+            background: var(--bg-surface);
             padding: 2rem;
             border-radius: var(--radius-lg);
             border: 1px solid var(--border);
+            box-shadow: var(--shadow-md);
             display: flex;
             flex-direction: column;
             align-items: center;
-            height: fit-content;
         }
 
         .section {
-            background: var(--surface);
-            padding: 1.5rem;
+            background: var(--bg-surface);
+            padding: 1.75rem;
             border-radius: var(--radius-lg);
             border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
         }
 
-        .section h3 {
-            font-size: 1.1rem;
-            font-weight: 500;
-            margin-bottom: 1.5rem;
-            color: var(--text-main);
+        .section-header {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .section-header h3 {
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: var(--text-main);
         }
 
         .form-group {
@@ -110,10 +118,10 @@
 
         label {
             display: block;
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.4rem;
             font-size: 0.875rem;
-            font-weight: 500;
-            color: var(--text-muted);
+            font-weight: 600;
+            color: var(--text-main);
         }
 
         input[type="text"],
@@ -125,18 +133,19 @@
         textarea {
             width: 100%;
             padding: 0.75rem 1rem;
-            background-color: var(--bg-color);
+            background-color: var(--bg-body);
             border: 1px solid var(--border);
             border-radius: var(--radius-md);
             color: var(--text-main);
-            font-size: 0.875rem;
-            transition: border-color 0.2s, box-shadow 0.2s;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
         }
 
         input:focus, select:focus, textarea:focus {
             outline: none;
             border-color: var(--border-focus);
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            background-color: var(--bg-surface);
+            box-shadow: 0 0 0 4px var(--primary-light);
         }
 
         .grid-2 {
@@ -145,90 +154,112 @@
             gap: 1rem;
         }
 
-        .color-matrix {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
+        /* Color Pickers Mejorados */
+        .color-group {
+            display: flex;
             gap: 1rem;
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
         }
 
-        .color-input-group {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
+        .color-picker-wrapper {
+            flex: 1;
         }
 
         input[type="color"] {
             width: 100%;
-            height: 40px;
+            height: 48px;
             padding: 0;
-            border: 1px solid var(--border);
+            border: 2px solid var(--border);
             border-radius: var(--radius-md);
             cursor: pointer;
             background: none;
+            transition: border-color 0.2s;
+        }
+        
+        input[type="color"]:hover {
+            border-color: var(--text-muted);
         }
 
-        input[type="color"]::-webkit-color-swatch-wrapper { padding: 2px; }
-        input[type="color"]::-webkit-color-swatch { border-radius: 4px; border: none; }
+        input[type="color"]::-webkit-color-swatch-wrapper { padding: 3px; }
+        input[type="color"]::-webkit-color-swatch { border-radius: 6px; border: none; }
 
-        .slider-group { margin-bottom: 1.25rem; }
+        /* Sliders */
+        .slider-group { margin-bottom: 1.5rem; }
         .slider-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
         .slider-value {
-            font-size: 0.75rem; font-weight: 600; color: var(--primary);
-            background: rgba(59, 130, 246, 0.1); padding: 0.25rem 0.5rem; border-radius: 4px;
+            font-size: 0.8rem; font-weight: 700; color: var(--primary);
+            background: var(--primary-light); padding: 0.25rem 0.6rem; border-radius: 6px;
         }
 
         input[type="range"] {
-            width: 100%; height: 6px; background: var(--bg-color);
-            border: 1px solid var(--border); border-radius: 3px; appearance: none; outline: none;
+            width: 100%; height: 6px; background: var(--border);
+            border-radius: 3px; appearance: none; outline: none;
         }
         input[type="range"]::-webkit-slider-thumb {
-            appearance: none; width: 16px; height: 16px; border-radius: 50%;
-            background: var(--primary); cursor: pointer; transition: transform 0.1s;
+            appearance: none; width: 18px; height: 18px; border-radius: 50%;
+            background: var(--primary); cursor: pointer; transition: transform 0.1s, box-shadow 0.1s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
-        input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.1); }
+        input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.15); }
 
+        /* Toggles */
         .toggle-group { display: flex; flex-wrap: wrap; gap: 0.5rem; }
         .toggle-btn {
-            padding: 0.5rem 1rem; background: var(--bg-color); border: 1px solid var(--border);
-            border-radius: var(--radius-md); color: var(--text-muted); font-size: 0.875rem;
+            flex: 1; text-align: center; padding: 0.6rem 1rem; background: var(--bg-body); 
+            border: 1px solid var(--border); border-radius: var(--radius-md); 
+            color: var(--text-muted); font-size: 0.875rem; font-weight: 500;
             cursor: pointer; transition: all 0.2s;
         }
         .toggle-btn:hover { background: var(--surface-hover); color: var(--text-main); }
-        .toggle-btn.active { background: var(--primary); border-color: var(--primary); color: #fff; }
+        .toggle-btn.active { background: var(--primary-light); border-color: var(--primary); color: var(--primary); font-weight: 600; }
 
+        /* Logo Upload */
         .logo-upload {
-            border: 1px dashed var(--border); padding: 2rem; text-align: center;
-            border-radius: var(--radius-md); cursor: pointer; background: var(--bg-color);
-            transition: all 0.2s; color: var(--text-muted); font-size: 0.875rem;
+            border: 2px dashed var(--border); padding: 2rem 1rem; text-align: center;
+            border-radius: var(--radius-md); cursor: pointer; background: var(--bg-body);
+            transition: all 0.2s; color: var(--text-muted);
         }
-        .logo-upload:hover { border-color: var(--primary); color: var(--text-main); }
-        .logo-upload.has-image { border-color: var(--success); border-style: solid; }
+        .logo-upload:hover { border-color: var(--primary); background: var(--primary-light); color: var(--primary); }
+        .logo-upload.has-image { border-color: var(--success); background: rgba(16, 185, 129, 0.1); color: var(--success); border-style: solid; }
+        .logo-upload svg { width: 32px; height: 32px; margin-bottom: 0.5rem; opacity: 0.7; }
 
         .qr-canvas {
             border-radius: var(--radius-md); background: #ffffff; max-width: 100%;
-            height: auto; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            height: auto; box-shadow: var(--shadow-md); transition: transform 0.2s;
         }
 
         .download-btn {
-            width: 100%; margin-top: 1.5rem; padding: 1rem; background-color: var(--primary);
-            color: #ffffff; border: none; border-radius: var(--radius-md); font-size: 1rem;
-            font-weight: 500; cursor: pointer; transition: background-color 0.2s;
+            width: 100%; margin-top: 2rem; padding: 1rem; background-color: var(--primary);
+            color: #ffffff; border: none; border-radius: var(--radius-md); font-size: 1.05rem;
+            font-weight: 600; cursor: pointer; transition: background-color 0.2s, transform 0.1s;
+            box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
         }
         .download-btn:hover { background-color: var(--primary-hover); }
+        .download-btn:active { transform: translateY(2px); }
 
-        .messages { width: 100%; margin-top: 1rem; font-size: 0.875rem; }
-        .message { padding: 0.75rem 1rem; border-radius: var(--radius-md); margin-bottom: 0.5rem; }
-        .message.success { background: rgba(16, 185, 129, 0.1); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.2); }
-        .message.error { background: rgba(239, 68, 68, 0.1); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.2); }
+        .messages { width: 100%; margin-top: 1rem; font-size: 0.9rem; font-weight: 500; text-align: center; }
+        .message { padding: 0.75rem 1rem; border-radius: var(--radius-md); margin-bottom: 0.5rem; animation: fadeIn 0.3s ease; }
+        .message.success { background: rgba(16, 185, 129, 0.1); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.3); }
+        .message.error { background: rgba(239, 68, 68, 0.1); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.3); }
 
-        .checkbox-label { display: flex; align-items: center; gap: 0.5rem; cursor: pointer; color: var(--text-main); font-weight: 500; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Highlight box for Consecutivos */
+        .sequence-box {
+            background: var(--primary-light);
+            border: 1px solid var(--border-focus);
+            padding: 1.5rem;
+            border-radius: var(--radius-md);
+            margin-top: 1rem;
+        }
+
+        .checkbox-label { display: inline-flex; align-items: center; gap: 0.5rem; cursor: pointer; color: var(--text-main); font-weight: 600; }
         .checkbox-label input { width: 18px; height: 18px; cursor: pointer; accent-color: var(--primary); }
 
         ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: var(--bg-color); }
-        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+        ::-webkit-scrollbar-track { background: var(--bg-body); }
+        ::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #64748b; }
 
         @media (max-width: 1024px) {
             .main-content { grid-template-columns: 1fr; }
@@ -239,107 +270,126 @@
 <body>
     <div class="container">
         <header class="header">
-            <h1>Generador QR Avanzado</h1>
-            <p>Producción de códigos estáticos y en lote con diseño paramétrico.</p>
+            <h1>Generador QR & Etiquetas</h1>
+            <p>Configura tus datos, personaliza el diseño y genera códigos en lote.</p>
         </header>
 
         <div class="main-content">
             <div class="controls-panel">
                 
+                <!-- 1. DATOS Y CONTENIDO -->
                 <div class="section">
-                    <h3>Datos y Estructura</h3>
+                    <div class="section-header">
+                        <h3>📝 1. Datos del Código</h3>
+                    </div>
+                    
                     <div class="grid-2">
                         <div class="form-group">
-                            <label for="qrType">Tipo de Datos</label>
+                            <label for="qrType">Tipo de Información</label>
                             <select id="qrType">
-                                <option value="url">URL / Enlace</option>
+                                <option value="url">URL / Enlace Web</option>
                                 <option value="text">Texto Libre</option>
                                 <option value="email">Correo Electrónico</option>
                                 <option value="phone">Teléfono</option>
                                 <option value="wifi">Red Wi-Fi</option>
-                                <option value="vcard">Contacto vCard</option>
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="errorCorrection">Corrección de Errores</label>
+                            <label for="errorCorrection">Calidad (Corrección Errores)</label>
                             <select id="errorCorrection">
-                                <option value="L">Bajo (7%)</option>
-                                <option value="M">Medio (15%)</option>
-                                <option value="Q" selected>Alto (25%)</option>
-                                <option value="H">Máximo (30%)</option>
+                                <option value="M">Estándar (15%)</option>
+                                <option value="Q" selected>Alta - Ideal para Logos (25%)</option>
+                                <option value="H">Máxima (30%)</option>
                             </select>
                         </div>
                     </div>
 
                     <div id="contentInputs">
                         <div class="form-group">
-                            <label for="qrContent">Destino Base</label>
-                            <textarea id="qrContent" rows="3" placeholder="https://ejemplo.com"></textarea>
+                            <label for="qrContent">Enlace o Contenido Base</label>
+                            <textarea id="qrContent" rows="2" placeholder="https://ejemplo.com/equipo/"></textarea>
                         </div>
                     </div>
 
-                    <div class="form-group" style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--border);">
+                    <div class="form-group" style="margin-top: 1.5rem; border-top: 1px solid var(--border); padding-top: 1.5rem;">
                         <label class="checkbox-label">
                             <input type="checkbox" id="enableSequence">
-                            Habilitar Producción en Lote (Consecutivos)
+                            Generar Etiquetas en Lote (Consecutivos)
                         </label>
                         
-                        <div id="sequenceConfig" style="display: none; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem;">
-                            <div class="form-group" style="grid-column: 1 / -1;">
-                                <label>Hostname / Equipo</label>
-                                <input type="text" id="seqHostname" placeholder="Ej: Mac Studio Fotografía">
+                        <div id="sequenceConfig" class="sequence-box" style="display: none;">
+                            <div class="form-group">
+                                <label>Nombre del Equipo / Hostname (Impreso arriba)</label>
+                                <input type="text" id="seqHostname" placeholder="Ej: Mac Studio Sala 1">
                             </div>
                             
-                            <div class="form-group">
-                                <label>Prefijo</label>
-                                <input type="text" id="seqPrefix" placeholder="FDS-" value="FDS-">
+                            <div class="grid-2">
+                                <div class="form-group">
+                                    <label>Prefijo del Serial</label>
+                                    <input type="text" id="seqPrefix" placeholder="FDS-" value="FDS-">
+                                </div>
+                                <div class="form-group">
+                                    <label>Número Actual</label>
+                                    <input type="number" id="seqValue" value="1" min="1">
+                                </div>
                             </div>
-                            <div class="form-group">
-                                <label>Valor Actual</label>
-                                <input type="number" id="seqValue" value="1" min="1">
+
+                            <div class="grid-2">
+                                <div class="form-group">
+                                    <label>Relleno de Ceros</label>
+                                    <input type="number" id="seqPadding" value="3" min="1" max="10">
+                                </div>
+                                <div class="form-group">
+                                    <label>Inyectar en URL</label>
+                                    <select id="seqAppendType">
+                                        <option value="path">Ruta (/FDS-001)</option>
+                                        <option value="query">Variable (?id=FDS-001)</option>
+                                        <option value="none">No inyectar</option>
+                                    </select>
+                                </div>
                             </div>
-                            <div class="form-group">
-                                <label>Dígitos (Relleno de Ceros)</label>
-                                <input type="number" id="seqPadding" value="3" min="1" max="10">
-                            </div>
-                            <div class="form-group">
-                                <label>Comportamiento de Inyección</label>
-                                <select id="seqAppendType">
-                                    <option value="path">Añadir como ruta (/001)</option>
-                                    <option value="query">Añadir como query (?id=001)</option>
-                                    <option value="append">Concatenar al final texto</option>
-                                </select>
-                            </div>
-                            <div class="form-group" style="grid-column: 1 / -1;">
-                                <label class="checkbox-label" style="font-size: 0.875rem;">
-                                    <input type="checkbox" id="seqDrawLabel" checked>
-                                    Imprimir etiquetas de texto (Hostname y Consecutivo) en la imagen
-                                </label>
-                            </div>
+                            
+                            <label class="checkbox-label" style="font-size: 0.875rem; margin-top: 0.5rem;">
+                                <input type="checkbox" id="seqDrawLabel" checked>
+                                Imprimir textos en la imagen final
+                            </label>
                         </div>
                     </div>
                 </div>
 
+                <!-- 2. APARIENCIA Y DISEÑO (TODO UNIFICADO AQUÍ) -->
                 <div class="section">
-                    <h3>Diseño Paramétrico</h3>
-                    <div class="grid-2">
-                        <div class="form-group">
-                            <label for="bgColor">Color de Fondo</label>
-                            <input type="color" id="bgColor" value="#ffffff">
+                    <div class="section-header">
+                        <h3>🎨 2. Apariencia y Diseño</h3>
+                    </div>
+
+                    <!-- Colores Simplificados -->
+                    <div class="color-group">
+                        <div class="color-picker-wrapper">
+                            <label>Color del QR (Texto y Módulos)</label>
+                            <input type="color" id="qrColor" value="#0f172a">
                         </div>
-                        <div class="form-group">
-                            <label for="moduleShape">Morfología</label>
-                            <select id="moduleShape">
-                                <option value="square">Cuadrados</option>
-                                <option value="rounded" selected>Redondeados</option>
-                                <option value="circle">Circulares</option>
-                            </select>
+                        <div class="color-picker-wrapper">
+                            <label>Color de Fondo</label>
+                            <input type="color" id="bgColor" value="#ffffff">
                         </div>
                     </div>
 
-                    <div class="slider-group">
+                    <!-- Estilo de Módulos -->
+                    <div class="form-group">
+                        <label>Estilo de los Cuadros</label>
+                        <div class="toggle-group" id="shapeModes">
+                            <button class="toggle-btn" data-value="square">Cuadrado</button>
+                            <button class="toggle-btn active" data-value="rounded">Redondeado</button>
+                            <button class="toggle-btn" data-value="circle">Círculos</button>
+                        </div>
+                        <input type="hidden" id="moduleShape" value="rounded">
+                    </div>
+
+                    <!-- Sliders de Geometría -->
+                    <div class="slider-group" style="margin-top: 2rem;">
                         <div class="slider-header">
-                            <label>Margen Interno (Quiet Zone)</label>
+                            <label>Margen Interno (Espacio Blanco)</label>
                             <span class="slider-value" id="qrMarginValue">20px</span>
                         </div>
                         <input type="range" id="qrMargin" min="0" max="60" value="20">
@@ -347,83 +397,41 @@
 
                     <div class="slider-group">
                         <div class="slider-header">
-                            <label>Resolución de Salida</label>
+                            <label>Tamaño / Resolución Final</label>
                             <span class="slider-value" id="qrSizeValue">500px</span>
                         </div>
                         <input type="range" id="qrSize" min="300" max="1200" step="50" value="500">
                     </div>
-                </div>
 
-                <div class="section">
-                    <h3>Colorimetría (Módulos)</h3>
-                    <div class="color-matrix">
-                        <div class="color-input-group">
-                            <label>Color 1</label>
-                            <input type="color" id="color1" value="#1e293b">
-                        </div>
-                        <div class="color-input-group">
-                            <label>Color 2</label>
-                            <input type="color" id="color2" value="#334155">
-                        </div>
-                        <div class="color-input-group">
-                            <label>Color 3</label>
-                            <input type="color" id="color3" value="#0f172a">
-                        </div>
-                        <div class="color-input-group">
-                            <label>Color 4</label>
-                            <input type="color" id="color4" value="#3b82f6">
+                    <!-- Logo Integrado -->
+                    <div class="form-group" style="margin-top: 2rem; border-top: 1px solid var(--border); padding-top: 1.5rem;">
+                        <label>Logotipo Central (Opcional)</label>
+                        <div class="logo-upload" id="logoUpload">
+                            <input type="file" id="logoInput" accept="image/png, image/jpeg, image/svg+xml" style="display: none;">
+                            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                            <br>
+                            <span style="font-weight: 500;">Clic o arrastra tu logo aquí</span>
+                            <div style="font-size: 0.8rem; margin-top: 0.5rem;">Formato PNG con transparencia recomendado</div>
                         </div>
                     </div>
 
-                    <div class="slider-group">
+                    <div class="slider-group" id="logoSizeContainer" style="display: none; margin-top: 1rem;">
                         <div class="slider-header">
-                            <label>Ángulo del Gradiente</label>
-                            <span class="slider-value" id="angleValue">45°</span>
-                        </div>
-                        <input type="range" id="gradientAngle" min="0" max="360" value="45">
-                    </div>
-
-                    <div class="form-group">
-                        <label>Modo de Fusión</label>
-                        <div class="toggle-group" id="blendModes">
-                            <button class="toggle-btn active" data-value="normal">Normal</button>
-                            <button class="toggle-btn" data-value="multiply">Multiply</button>
-                            <button class="toggle-btn" data-value="screen">Screen</button>
-                            <button class="toggle-btn" data-value="overlay">Overlay</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="section">
-                    <h3>Integración de Marca</h3>
-                    <div class="logo-upload" id="logoUpload">
-                        <input type="file" id="logoInput" accept="image/png, image/jpeg, image/svg+xml" style="display: none;">
-                        <span>Seleccionar archivo o arrastrar imagen</span><br>
-                        <small style="opacity: 0.7; margin-top: 0.5rem; display: block;">PNG, JPG o SVG (Recomendado con transparencia)</small>
-                    </div>
-                    
-                    <div class="form-group" style="margin-top: 1.5rem;">
-                        <label>Método de Integración</label>
-                        <div class="toggle-group" id="integrationModes">
-                            <button class="toggle-btn active" data-value="cutout">Recorte Exacto</button>
-                            <button class="toggle-btn" data-value="overlay">Capa Superpuesta</button>
-                            <button class="toggle-btn" data-value="blend">Multiply Blend</button>
-                        </div>
-                    </div>
-
-                    <div class="slider-group">
-                        <div class="slider-header">
-                            <label>Escala de Marca</label>
+                            <label>Tamaño del Logo</label>
                             <span class="slider-value" id="logoSizeValue">20%</span>
                         </div>
                         <input type="range" id="logoSize" min="5" max="35" value="20">
                     </div>
                 </div>
+
             </div>
 
+            <!-- PREVISUALIZACIÓN Y ACCIÓN -->
             <div class="qr-display">
                 <canvas id="qrCanvas"></canvas>
-                <button class="download-btn" onclick="downloadQR()">Exportar y Auto-incrementar</button>
+                <button class="download-btn" onclick="downloadQR()">
+                    Descargar QR
+                </button>
                 <div id="messages" class="messages"></div>
             </div>
         </div>
@@ -432,8 +440,6 @@
     <script>
         let currentQR = null;
         let logoImage = null;
-        let selectedIntegration = 'cutout';
-        let selectedBlendMode = 'normal';
 
         document.addEventListener('DOMContentLoaded', () => {
             initializeEventListeners();
@@ -443,8 +449,7 @@
         function initializeEventListeners() {
             // Inputs básicos
             const renderTriggers = [
-                'qrContent', 'errorCorrection', 'bgColor', 'moduleShape',
-                'color1', 'color2', 'color3', 'color4', 'seqDrawLabel'
+                'qrContent', 'errorCorrection', 'bgColor', 'qrColor', 'moduleShape', 'seqDrawLabel'
             ];
             
             renderTriggers.forEach(id => {
@@ -454,13 +459,15 @@
 
             // Consecutivos toggle y inputs
             document.getElementById('enableSequence').addEventListener('change', (e) => {
-                document.getElementById('sequenceConfig').style.display = e.target.checked ? 'grid' : 'none';
+                document.getElementById('sequenceConfig').style.display = e.target.checked ? 'block' : 'none';
+                const btn = document.querySelector('.download-btn');
+                btn.textContent = e.target.checked ? 'Exportar y Auto-incrementar' : 'Descargar QR';
                 generateQR();
             });
 
-            // Modificados los triggers para el consecutivo
             ['seqPrefix', 'seqValue', 'seqPadding', 'seqAppendType', 'seqHostname'].forEach(id => {
-                document.getElementById(id).addEventListener('input', generateQR);
+                const el = document.getElementById(id);
+                if(el) el.addEventListener('input', generateQR);
             });
 
             document.getElementById('qrType').addEventListener('change', updateContentInputs);
@@ -469,7 +476,6 @@
             const sliders = {
                 'qrSize': { display: 'qrSizeValue', suffix: 'px', callback: updateCanvasStyles },
                 'qrMargin': { display: 'qrMarginValue', suffix: 'px', callback: generateQR },
-                'gradientAngle': { display: 'angleValue', suffix: '°', callback: generateQR },
                 'logoSize': { display: 'logoSizeValue', suffix: '%', callback: generateQR }
             };
 
@@ -484,9 +490,11 @@
                 }
             });
 
-            // Botones de Modo
-            setupToggleGroup('blendModes', (val) => { selectedBlendMode = val; generateQR(); });
-            setupToggleGroup('integrationModes', (val) => { selectedIntegration = val; generateQR(); });
+            // Botones de Morfología
+            setupToggleGroup('shapeModes', (val) => { 
+                document.getElementById('moduleShape').value = val;
+                generateQR(); 
+            });
 
             // Carga de Logo
             const uploadArea = document.getElementById('logoUpload');
@@ -528,8 +536,11 @@
             reader.onload = (e) => {
                 logoImage = new Image();
                 logoImage.onload = () => {
-                    document.getElementById('logoUpload').classList.add('has-image');
-                    document.getElementById('logoUpload').querySelector('span').textContent = 'Imagen cargada: ' + file.name;
+                    const uploadArea = document.getElementById('logoUpload');
+                    uploadArea.classList.add('has-image');
+                    uploadArea.querySelector('span').textContent = 'Logo: ' + file.name;
+                    uploadArea.querySelector('svg').style.display = 'none';
+                    document.getElementById('logoSizeContainer').style.display = 'block';
                     generateQR();
                 };
                 logoImage.src = e.target.result;
@@ -551,21 +562,20 @@
             let html = '';
             switch(type) {
                 case 'url': html = `<div class="form-group"><label>URL</label><input type="text" id="qrContent" value="https://"></div>`; break;
-                case 'text': html = `<div class="form-group"><label>Contenido Textual</label><textarea id="qrContent" rows="4" placeholder="Ingresar datos..."></textarea></div>`; break;
+                case 'text': html = `<div class="form-group"><label>Contenido Textual</label><textarea id="qrContent" rows="3" placeholder="Ingresar datos..."></textarea></div>`; break;
                 case 'email':
                     html = `<div class="form-group"><label>Dirección Email</label><input type="email" id="eAddr"></div>
-                            <div class="form-group"><label>Asunto</label><input type="text" id="eSubj"></div>
-                            <div class="form-group"><label>Cuerpo</label><textarea id="eBody" rows="2"></textarea></div>`; break;
+                            <div class="grid-2">
+                                <div class="form-group"><label>Asunto</label><input type="text" id="eSubj"></div>
+                                <div class="form-group"><label>Cuerpo</label><input type="text" id="eBody"></div>
+                            </div>`; break;
                 case 'phone': html = `<div class="form-group"><label>Número</label><input type="tel" id="pNum" placeholder="+1234567890"></div>`; break;
                 case 'wifi':
-                    html = `<div class="form-group"><label>SSID</label><input type="text" id="wSSID"></div>
-                            <div class="form-group"><label>Contraseña</label><input type="password" id="wPass"></div>
+                    html = `<div class="grid-2">
+                                <div class="form-group"><label>SSID</label><input type="text" id="wSSID"></div>
+                                <div class="form-group"><label>Contraseña</label><input type="password" id="wPass"></div>
+                            </div>
                             <div class="form-group"><label>Seguridad</label><select id="wSec"><option value="WPA">WPA/WPA2</option><option value="WEP">WEP</option><option value="nopass">Abierta</option></select></div>`; break;
-                case 'vcard':
-                    html = `<div class="grid-2"><div class="form-group"><label>Nombre</label><input type="text" id="vName"></div>
-                            <div class="form-group"><label>Empresa</label><input type="text" id="vOrg"></div>
-                            <div class="form-group"><label>Tel</label><input type="tel" id="vPhone"></div>
-                            <div class="form-group"><label>Email</label><input type="email" id="vEmail"></div></div>`; break;
             }
             
             container.innerHTML = html;
@@ -594,7 +604,6 @@
                     case 'email': basePayload = `mailto:${document.getElementById('eAddr')?.value || ''}?subject=${encodeURIComponent(document.getElementById('eSubj')?.value || '')}&body=${encodeURIComponent(document.getElementById('eBody')?.value || '')}`; break;
                     case 'phone': basePayload = `tel:${document.getElementById('pNum')?.value || ''}`; break;
                     case 'wifi': basePayload = `WIFI:T:${document.getElementById('wSec')?.value || 'WPA'};S:${document.getElementById('wSSID')?.value || ''};P:${document.getElementById('wPass')?.value || ''};;`; break;
-                    case 'vcard': basePayload = `BEGIN:VCARD\nVERSION:3.0\nFN:${document.getElementById('vName')?.value || ''}\nORG:${document.getElementById('vOrg')?.value || ''}\nTEL:${document.getElementById('vPhone')?.value || ''}\nEMAIL:${document.getElementById('vEmail')?.value || ''}\nEND:VCARD`; break;
                 }
             } catch(e) {}
 
@@ -608,12 +617,8 @@
                         basePayload += (basePayload.includes('?') ? '&' : '?') + 'id=' + encodeURIComponent(seqStr);
                     } else if (appendType === 'path') {
                         basePayload += (basePayload.endsWith('/') ? '' : '/') + encodeURIComponent(seqStr);
-                    } else {
-                        basePayload += ' ' + seqStr;
                     }
-                } else if (type === 'vcard') {
-                    basePayload = basePayload.replace('END:VCARD', `NOTE:ID-${seqStr}\nEND:VCARD`);
-                } else {
+                } else if(appendType !== 'none') {
                     basePayload += ' ' + seqStr;
                 }
             }
@@ -635,7 +640,7 @@
                 currentQR = qr;
                 renderCanvas(qr);
             } catch (err) {
-                console.warn("Generación pendiente: datos insuficientes.", err);
+                console.warn("Generación pendiente: datos insuficientes.");
             }
         }
 
@@ -647,6 +652,10 @@
             const size = parseInt(document.getElementById('qrSize').value);
             const margin = parseInt(document.getElementById('qrMargin').value);
             const renderSize = size - (margin * 2);
+
+            // Colores
+            const bgColor = document.getElementById('bgColor').value;
+            const qrColor = document.getElementById('qrColor').value;
 
             // Calcular áreas para etiquetas de texto
             const isSeqEnabled = document.getElementById('enableSequence').checked;
@@ -662,29 +671,14 @@
             canvas.height = size + topLabelHeight + bottomLabelHeight;
             
             // Fondo general
-            ctx.fillStyle = document.getElementById('bgColor').value;
+            ctx.fillStyle = bgColor;
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
             const modules = qr.getModuleCount();
             const moduleSize = renderSize / modules;
 
-            // Configurar el gradiente (ajustado al área del QR)
-            const angle = parseInt(document.getElementById('gradientAngle').value);
-            const rad = (angle * Math.PI) / 180;
-            const x1 = size/2 - Math.cos(rad) * size/2;
-            const y1 = topLabelHeight + size/2 - Math.sin(rad) * size/2;
-            const x2 = size/2 + Math.cos(rad) * size/2;
-            const y2 = topLabelHeight + size/2 + Math.sin(rad) * size/2;
-
-            const gradient = ctx.createLinearGradient(x1, y1, x2, y2);
-            gradient.addColorStop(0, document.getElementById('color1').value);
-            gradient.addColorStop(0.33, document.getElementById('color2').value);
-            gradient.addColorStop(0.66, document.getElementById('color3').value);
-            gradient.addColorStop(1, document.getElementById('color4').value);
-
-            ctx.globalCompositeOperation = selectedBlendMode;
-            ctx.fillStyle = gradient;
-
+            // Color del QR
+            ctx.fillStyle = qrColor;
             const shape = document.getElementById('moduleShape').value;
             const logoConfig = getLogoConfig(modules);
 
@@ -692,7 +686,8 @@
             for (let row = 0; row < modules; row++) {
                 for (let col = 0; col < modules; col++) {
                     if (qr.isDark(row, col)) {
-                        if (logoImage && selectedIntegration === 'cutout' && isInsideLogo(row, col, logoConfig)) {
+                        // Recorte para el logo
+                        if (logoImage && isInsideLogo(row, col, logoConfig)) {
                             continue; 
                         }
                         const x = margin + (col * moduleSize);
@@ -702,10 +697,8 @@
                 }
             }
 
-            ctx.globalCompositeOperation = 'source-over';
-
             if (logoImage) {
-                renderLogo(ctx, size, margin, renderSize, topLabelHeight);
+                renderLogo(ctx, size, renderSize, topLabelHeight);
             }
 
             // Renderizar etiqueta superior (Hostname)
@@ -715,7 +708,7 @@
                 let textY = topLabelHeight * 0.25;
                 
                 if (hostname) {
-                    ctx.fillStyle = document.getElementById('color1').value;
+                    ctx.fillStyle = qrColor;
                     ctx.font = `bold ${Math.floor(size * 0.055)}px Inter, sans-serif`;
                     ctx.fillText(hostname, size / 2, textY);
                 }
@@ -724,7 +717,7 @@
             // Renderizar la etiqueta del consecutivo inferior
             if (drawLabel) {
                 const seqStr = getCurrentSequenceString();
-                ctx.fillStyle = document.getElementById('color1').value; 
+                ctx.fillStyle = qrColor; 
                 ctx.font = `bold ${Math.floor(size * 0.05)}px Inter, monospace`;
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
@@ -734,7 +727,7 @@
         }
 
         function drawModuleShape(ctx, x, y, size, shape) {
-            const pad = shape === 'square' ? 0 : size * 0.05; 
+            const pad = shape === 'square' ? 0 : size * 0.08; 
             const drawSize = size - (pad * 2);
             const drawX = x + pad;
             const drawY = y + pad;
@@ -743,7 +736,7 @@
             if (shape === 'circle') {
                 ctx.arc(drawX + drawSize/2, drawY + drawSize/2, drawSize/2, 0, 2 * Math.PI);
             } else if (shape === 'rounded') {
-                const radius = drawSize * 0.3;
+                const radius = drawSize * 0.35;
                 if(ctx.roundRect) { ctx.roundRect(drawX, drawY, drawSize, drawSize, radius); } 
                 else { ctx.rect(drawX, drawY, drawSize, drawSize); }
             } else {
@@ -753,6 +746,7 @@
         }
 
         function getLogoConfig(modulesCount) {
+            if(!logoImage) return {start: -1, end: -1};
             const logoPercent = parseInt(document.getElementById('logoSize').value) / 100;
             const logoModules = Math.floor(modulesCount * logoPercent);
             const center = Math.floor(modulesCount / 2);
@@ -764,7 +758,7 @@
             return (row >= config.start && row <= config.end && col >= config.start && col <= config.end);
         }
 
-        function renderLogo(ctx, totalSize, margin, renderSize, offsetY) {
+        function renderLogo(ctx, totalSize, renderSize, offsetY) {
             const logoPercent = parseInt(document.getElementById('logoSize').value) / 100;
             const logoDrawSize = renderSize * logoPercent;
             const center = totalSize / 2;
@@ -772,20 +766,6 @@
             const ly = offsetY + center - (logoDrawSize / 2);
 
             ctx.save();
-            if (selectedIntegration === 'blend') {
-                ctx.globalCompositeOperation = 'multiply';
-            } else if (selectedIntegration === 'overlay') {
-                const bgPadding = logoDrawSize * 0.1;
-                ctx.fillStyle = document.getElementById('bgColor').value;
-                ctx.beginPath();
-                if(ctx.roundRect) {
-                    ctx.roundRect(lx - bgPadding, ly - bgPadding, logoDrawSize + (bgPadding*2), logoDrawSize + (bgPadding*2), 8);
-                } else {
-                    ctx.fillRect(lx - bgPadding, ly - bgPadding, logoDrawSize + (bgPadding*2), logoDrawSize + (bgPadding*2));
-                }
-                ctx.fill();
-            }
-
             ctx.drawImage(logoImage, lx, ly, logoDrawSize, logoDrawSize);
             ctx.restore();
         }
@@ -804,14 +784,14 @@
             const isSeqEnabled = document.getElementById('enableSequence').checked;
             
             let filename = `qr_export_${new Date().getTime()}.png`;
-            let successMsg = 'Exportación completada';
+            let successMsg = 'Descarga completada';
 
             if (isSeqEnabled) {
                 const seqStr = getCurrentSequenceString();
                 const hostname = document.getElementById('seqHostname').value.trim().replace(/[^a-z0-9]/gi, '_').toLowerCase();
                 const suffix = hostname ? `_${hostname}` : '';
                 filename = `qr_${seqStr}${suffix}.png`;
-                successMsg = `Exportado: ${filename}. Generando el siguiente...`;
+                successMsg = `Exportado: ${filename}. Listo para el siguiente.`;
             }
 
             link.download = filename;
