@@ -285,14 +285,9 @@
                         </label>
                         
                         <div id="sequenceConfig" style="display: none; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1rem;">
-                            <!-- Nuevos campos agregados -->
-                            <div class="form-group">
+                            <div class="form-group" style="grid-column: 1 / -1;">
                                 <label>Hostname / Equipo</label>
                                 <input type="text" id="seqHostname" placeholder="Ej: Mac Studio Fotografía">
-                            </div>
-                            <div class="form-group">
-                                <label>Responsable</label>
-                                <input type="text" id="seqResponsable" placeholder="Ej: David Cano">
                             </div>
                             
                             <div class="form-group">
@@ -318,7 +313,7 @@
                             <div class="form-group" style="grid-column: 1 / -1;">
                                 <label class="checkbox-label" style="font-size: 0.875rem;">
                                     <input type="checkbox" id="seqDrawLabel" checked>
-                                    Imprimir etiquetas de texto (Responsable y Consecutivo) en la imagen
+                                    Imprimir etiquetas de texto (Hostname y Consecutivo) en la imagen
                                 </label>
                             </div>
                         </div>
@@ -463,8 +458,8 @@
                 generateQR();
             });
 
-            // Añadidos seqHostname y seqResponsable a los triggers
-            ['seqPrefix', 'seqValue', 'seqPadding', 'seqAppendType', 'seqHostname', 'seqResponsable'].forEach(id => {
+            // Modificados los triggers para el consecutivo
+            ['seqPrefix', 'seqValue', 'seqPadding', 'seqAppendType', 'seqHostname'].forEach(id => {
                 document.getElementById(id).addEventListener('input', generateQR);
             });
 
@@ -658,10 +653,9 @@
             const drawLabel = isSeqEnabled && document.getElementById('seqDrawLabel').checked;
             
             const hostname = isSeqEnabled ? document.getElementById('seqHostname').value.trim() : '';
-            const responsable = isSeqEnabled ? document.getElementById('seqResponsable').value.trim() : '';
             
-            const hasTopLabel = drawLabel && (hostname !== '' || responsable !== '');
-            const topLabelHeight = hasTopLabel ? Math.max(80, size * 0.18) : 0;
+            const hasTopLabel = drawLabel && (hostname !== '');
+            const topLabelHeight = hasTopLabel ? Math.max(50, size * 0.12) : 0;
             const bottomLabelHeight = drawLabel ? Math.max(40, size * 0.1) : 0;
             
             canvas.width = size;
@@ -714,22 +708,16 @@
                 renderLogo(ctx, size, margin, renderSize, topLabelHeight);
             }
 
-            // Renderizar etiquetas superiores (Hostname y Responsable)
+            // Renderizar etiqueta superior (Hostname)
             if (hasTopLabel) {
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'top';
-                let textY = topLabelHeight * 0.15;
+                let textY = topLabelHeight * 0.25;
                 
                 if (hostname) {
                     ctx.fillStyle = document.getElementById('color1').value;
                     ctx.font = `bold ${Math.floor(size * 0.055)}px Inter, sans-serif`;
                     ctx.fillText(hostname, size / 2, textY);
-                    textY += size * 0.07;
-                }
-                if (responsable) {
-                    ctx.fillStyle = document.getElementById('color4').value; // Color de acento
-                    ctx.font = `bold ${Math.floor(size * 0.045)}px Inter, sans-serif`;
-                    ctx.fillText(`Resp: ${responsable}`, size / 2, textY);
                 }
             }
 
